@@ -1,0 +1,80 @@
+<?php
+
+namespace common\models;
+
+use common\models\query\ProfileQuery;
+use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
+
+/**
+ * This is the model class for table "{{%profile}}".
+ *
+ * @property string $profile_id
+ * @property string|null $link
+ * @property string $name
+ * @property int|null $user_id
+ * @property string|null $description
+ *
+ * @property User $user
+ */
+class Profile extends ActiveRecord
+{
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName()
+    {
+        return '{{%profile}}';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return [
+            [['profile_id', 'name'], 'required'],
+            [['user_id'], 'integer'],
+            [['description'], 'string'],
+            [['profile_id', 'link'], 'string', 'max' => 32],
+            [['name'], 'string', 'max' => 64],
+            [['link'], 'unique'],
+            [['profile_id'], 'unique'],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'profile_id' => 'Profile ID',
+            'link' => 'Link',
+            'name' => 'Name',
+            'user_id' => 'User ID',
+            'description' => 'Description',
+        ];
+    }
+
+    /**
+     * Gets query for [[User]].
+     *
+     * @return ActiveQuery|\common\models\UserQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @return ProfileQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new ProfileQuery(get_called_class());
+    }
+}
