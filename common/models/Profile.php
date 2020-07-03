@@ -62,7 +62,7 @@ class Profile extends ActiveRecord
     /**
      * Gets query for [[User]].
      *
-     * @return ActiveQuery|\common\models\UserQuery
+     * @return ActiveQuery
      */
     public function getUser()
     {
@@ -76,5 +76,52 @@ class Profile extends ActiveRecord
     public static function find()
     {
         return new ProfileQuery(get_called_class());
+    }
+
+    /**
+     * @return bool
+     * @throws \yii\base\Exception
+     */
+    public function newRecord()
+    {
+        $this->user_id = Yii::$app->user->id;
+        do
+        {
+            $randomId = Yii::$app->security->generateRandomString(16);
+        } while (Profile::find()->where(['profile_id' => $randomId])->exists());
+
+        $this->profile_id = $randomId;
+        $this->fillLink();
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function fillLink()
+    {
+        if ($this->link == null)
+        {
+            $this->link = $this->profile_id;
+        }
+        return true;
+    }
+
+    /**
+     * @param $user User
+     * @return bool
+     */
+    public function isOwnedBy($user)
+    {
+        return ($this->user_id == $user->id);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMine()
+    {
+        return $this->isOwnedBy(Yii::$app->user);
     }
 }

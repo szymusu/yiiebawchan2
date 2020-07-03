@@ -56,14 +56,17 @@ class ProfileController extends Controller
 
     /**
      * Displays a single Profile model.
-     * @param string $id
+     * @param string $link
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionView($link)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
+        $model = $this->findModelByLink($link);
+        $view = $model->isMine() ? 'view_owner' : 'view_guest';
+
+        return $this->render($view, [
+            'model' => $model,
         ]);
     }
 
@@ -76,8 +79,8 @@ class ProfileController extends Controller
     {
         $model = new Profile();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->profile_id]);
+        if ($model->load(Yii::$app->request->post()) && $model->newRecord() && $model->save()) {
+            return $this->redirect(['view', 'link' => $model->profile_id]);
         }
 
         return $this->render('create', [
@@ -95,9 +98,10 @@ class ProfileController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        if (!($model->isMine())) $this->goBack();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->profile_id]);
+        if ($model->load(Yii::$app->request->post()) && $model->fillLink() && $model->save()) {
+            return $this->redirect(['view', 'link' => $model->profile_id]);
         }
 
         return $this->render('update', [
@@ -114,7 +118,12 @@ class ProfileController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+
+        if ($model->isMine())
+        {
+            $model->delete();
+        }
 
         return $this->redirect(['index']);
     }
@@ -133,5 +142,20 @@ class ProfileController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /**
+     * Finds the Profile model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param string $link
+     * @return Profile the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModelByLink($link)
+    {
+        if (($model = Profile::findOne(['link' => $link])) !== null) {
+            return $model;
+        }
+        return $this->findModel($link);
     }
 }
