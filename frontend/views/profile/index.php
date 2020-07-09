@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use yii\widgets\ListView;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -18,19 +18,13 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
 
-    <?= GridView::widget([
+    <?= ListView::widget([
         'dataProvider' => $dataProvider,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'profile_id',
-            'link',
-            'name',
-            'user_id',
-            'description:ntext',
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
+        'itemView' => '_profile_item',
+        'layout' => '<div class="d-flex flex-wrap">{items}</div>{pager}',
+        'itemOptions' => [
+            'tag' => false
+        ]
     ]); ?>
 
 

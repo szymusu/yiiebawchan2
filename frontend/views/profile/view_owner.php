@@ -17,8 +17,8 @@ YiiAsset::register($this);
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->profile_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->profile_id], [
+        <?= Html::a('Update', ['update', 'link' => $model->link], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Delete', ['delete', 'link' => $model->link], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
@@ -30,10 +30,8 @@ YiiAsset::register($this);
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'profile_id',
             'link',
             'name',
-            'user_id',
             'description:ntext',
         ],
     ]) ?>

@@ -15,6 +15,7 @@ use yii\db\ActiveRecord;
  * @property string $name
  * @property int|null $user_id
  * @property string|null $description
+ * @property int $last_login
  *
  * @property User $user
  */
@@ -35,7 +36,7 @@ class Profile extends ActiveRecord
     {
         return [
             [['profile_id', 'name'], 'required'],
-            [['user_id'], 'integer'],
+            [['user_id', 'last_login'], 'integer'],
             [['description'], 'string'],
             [['profile_id', 'link'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 64],
@@ -56,6 +57,7 @@ class Profile extends ActiveRecord
             'name' => 'Name',
             'user_id' => 'User ID',
             'description' => 'Description',
+            'last_login' => 'Last login',
         ];
     }
 
@@ -123,5 +125,11 @@ class Profile extends ActiveRecord
     public function isMine()
     {
         return $this->isOwnedBy(Yii::$app->user);
+    }
+
+    public function loginTimestamp()
+    {
+        $this->last_login = time();
+        $this->save(true, ['last_login']);
     }
 }

@@ -25,6 +25,7 @@ class ProfileController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'switch' => ['POST'],
                 ],
             ],
             'access' => [
@@ -46,7 +47,10 @@ class ProfileController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Profile::find(),
+            'query' => Profile::find()
+                ->onlyMine()
+                ->select(['link', 'name', 'description'])
+                ->orderBy(['last_login' => SORT_DESC, 'name' => SORT_ASC]),
         ]);
 
         return $this->render('index', [
@@ -91,17 +95,17 @@ class ProfileController extends Controller
     /**
      * Updates an existing Profile model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
+     * @param string $link
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+    public function actionUpdate($link)
     {
-        $model = $this->findModel($id);
+        $model = $this->findModelByLink($link);
         if (!($model->isMine())) $this->goBack();
 
         if ($model->load(Yii::$app->request->post()) && $model->fillLink() && $model->save()) {
-            return $this->redirect(['view', 'link' => $model->profile_id]);
+            return $this->redirect(['view', 'link' => $model->link]);
         }
 
         return $this->render('update', [
@@ -112,13 +116,13 @@ class ProfileController extends Controller
     /**
      * Deletes an existing Profile model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param string $id
+     * @param string $link
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionDelete($link)
     {
-        $model = $this->findModel($id);
+        $model = $this->findModelByLink($link);
 
         if ($model->isMine())
         {
@@ -126,6 +130,12 @@ class ProfileController extends Controller
         }
 
         return $this->redirect(['index']);
+    }
+
+    public function actionSwitch($link)
+    {
+        Yii::$app->profile->switchTo($this->findModelByLink($link));
+        return $this->redirect('index');
     }
 
     /**
@@ -156,6 +166,6 @@ class ProfileController extends Controller
         if (($model = Profile::findOne(['link' => $link])) !== null) {
             return $model;
         }
-        return $this->findModel($link);
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

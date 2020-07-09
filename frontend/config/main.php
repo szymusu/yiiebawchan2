@@ -41,8 +41,12 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                '/profile/view/<link>' => '/profile/view'
+                '/profile/view/<link>' => '/profile/view',
+                '/profile/update/<link>' => '/profile/update'
             ],
+        ],
+        'profile' => [
+            'class' => \common\components\Profile::class,
         ],
 
     ],
