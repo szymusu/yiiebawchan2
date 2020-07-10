@@ -3,17 +3,18 @@
 namespace frontend\controllers;
 
 use Yii;
-use common\models\Profile;
+use common\models\Post;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * ProfileController implements the CRUD actions for Profile model.
+ * PostController implements the CRUD actions for Post model.
  */
-class ProfileController extends Controller
+class PostController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -25,7 +26,6 @@ class ProfileController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
-                    'switch' => ['POST'],
                 ],
             ],
             'access' => [
@@ -41,16 +41,13 @@ class ProfileController extends Controller
     }
 
     /**
-     * Lists all Profile models.
+     * Lists all Post models.
      * @return mixed
      */
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Profile::find()
-                ->onlyMine()
-                ->select(['link', 'name', 'description'])
-                ->orderBy(['last_login' => SORT_DESC, 'name' => SORT_ASC]),
+            'query' => Post::find()->orderBy(['created_at' => SORT_DESC]),
         ]);
 
         return $this->render('index', [
@@ -59,32 +56,36 @@ class ProfileController extends Controller
     }
 
     /**
-     * Displays a single Profile model.
-     * @param string $link
+     * Displays a single Post model.
+     * @param string $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($link)
+    public function actionView($id)
     {
-        $model = $this->findModelByLink($link);
-        $view = $model->isMine() ? 'view_owner' : 'view_guest';
-
-        return $this->render($view, [
-            'model' => $model,
+        return $this->render('_post_item', [
+            'model' => $this->findModel($id),
+            'isPostPage' => true,
         ]);
     }
 
     /**
-     * Creates a new Profile model.
+     * Creates a new Post model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
+     * @throws \yii\base\Exception
      */
     public function actionCreate()
     {
-        $model = new Profile();
+        if (!(Yii::$app->profile->getIsLogged()))
+        {
+            throw new MethodNotAllowedHttpException('You must be using a profile to post!');
+        }
 
-        if ($model->load(Yii::$app->request->post()) && $model->newRecord() && $model->save()) {
-            return $this->redirect(['view', 'link' => $model->link]);
+        $model = new Post();
+
+        if ($model->load(Yii::$app->request->post()) && $model->saveNew(Yii::$app->profile->get())) {
+            return $this->redirect(['view', 'id' => $model->post_id]);
         }
 
         return $this->render('create', [
@@ -93,19 +94,19 @@ class ProfileController extends Controller
     }
 
     /**
-     * Updates an existing Profile model.
+     * Updates an existing Post model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $link
+     * @param string $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($link)
+    public function actionEdit($id)
     {
-        $model = $this->findModelByLink($link);
+        $model = $this->findModel($id);
         if (!($model->isMine())) $this->goBack();
 
-        if ($model->load(Yii::$app->request->post()) && $model->fillLink() && $model->save()) {
-            return $this->redirect(['view', 'link' => $model->link]);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->post_id]);
         }
 
         return $this->render('update', [
@@ -114,16 +115,15 @@ class ProfileController extends Controller
     }
 
     /**
-     * Deletes an existing Profile model.
+     * Deletes an existing Post model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param string $link
+     * @param string $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($link)
+    public function actionDelete($id)
     {
-        $model = $this->findModelByLink($link);
-
+        $model = $this->findModel($id);
         if ($model->isMine())
         {
             $model->delete();
@@ -132,40 +132,19 @@ class ProfileController extends Controller
         return $this->redirect(['index']);
     }
 
-    public function actionSwitch($link)
-    {
-        Yii::$app->profile->switchTo($this->findModelByLink($link));
-        return $this->redirect('index');
-    }
-
     /**
-     * Finds the Profile model based on its primary key value.
+     * Finds the Post model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param string $id
-     * @return Profile the loaded model
+     * @return Post the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Profile::findOne($id)) !== null) {
+        if (($model = Post::findOne($id)) !== null) {
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
-
-    /**
-     * Finds the Profile model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param string $link
-     * @return Profile the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModelByLink($link)
-    {
-        if (($model = Profile::findOne(['link' => $link])) !== null) {
-            return $model;
-        }
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

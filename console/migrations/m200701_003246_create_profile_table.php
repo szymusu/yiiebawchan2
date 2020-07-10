@@ -16,7 +16,7 @@ class m200701_003246_create_profile_table extends Migration
     public function safeUp()
     {
         $this->createTable('{{%profile}}', [
-            'profile_id' => $this->string(32)->notNull(),
+            'profile_id' => $this->string(16)->notNull(),
             'link' => $this->string(32)->unique(),
             'name' => $this->string(64)->notNull(),
             'user_id' => $this->integer(11),

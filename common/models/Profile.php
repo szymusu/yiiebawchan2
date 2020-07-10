@@ -38,7 +38,7 @@ class Profile extends ActiveRecord
             [['profile_id', 'name'], 'required'],
             [['user_id', 'last_login'], 'integer'],
             [['description'], 'string'],
-            [['profile_id', 'link'], 'string', 'max' => 32],
+            [['profile_id', 'link'], 'string', 'max' => 16],
             [['name'], 'string', 'max' => 64],
             [['link'], 'unique'],
             [['profile_id'], 'unique'],

@@ -42,7 +42,8 @@ return [
             'showScriptName' => false,
             'rules' => [
                 '/profile/view/<link>' => '/profile/view',
-                '/profile/update/<link>' => '/profile/update'
+                '/profile/update/<link>' => '/profile/update',
+                '/post/view/<id>' => '/post/view'
             ],
         ],
         'profile' => [
