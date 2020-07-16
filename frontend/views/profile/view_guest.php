@@ -12,17 +12,10 @@ $this->params['breadcrumbs'][] = ['label' => 'Profiles', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 YiiAsset::register($this);
 ?>
-<div class="profile-view">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'name',
-            'description:ntext',
-        ],
-    ]) ?>
-
+<div class="card m-3" style="width: 100%;">
+    <img src="https://i.ytimg.com/vi/muurR5-Je1o/hqdefault.jpg" class="card-img-top" alt="test żeber">
+    <div class="card-body">
+        <h5 class="card-title mb-5"><?= $model->name ?></h5>
+        <p class="card-text"><?= Yii::$app->formatter->asParagraphs($model->description) ?></p>
+    </div>
 </div>

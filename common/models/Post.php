@@ -110,6 +110,14 @@ class Post extends ActiveRecord
     {
         return new PostQuery(get_called_class());
     }
+
+    /**
+     * @return bool
+     */
+    public function canIAccess()
+    {
+        return Yii::$app->profile->getIsLogged(); //TODO check for access permissions
+    }
     
     /**
      * @return bool
@@ -128,5 +136,13 @@ class Post extends ActiveRecord
         $this->post_id = $randomId;
 
         return $this->save();
+    }
+
+    /**
+     * @return int
+     */
+    public function getReactionCount()
+    {
+        return Reaction::find()->post($this->post_id)->count();
     }
 }

@@ -48,4 +48,13 @@ use yii\web\View;
         </div>
     </div>
     <div><?= Yii::$app->formatter->asParagraphs($model->content) ?></div>
+    <div class="mt-3">
+        <?= $model->getReactionCount() . ' reactions' ?>
+        <?= Html::a('React', ['react', 'id' => $model->post_id, 'type' => 1], [
+            'class' => 'btn btn-primary ml-2',
+            'data' => [
+                'method' => 'post'
+            ]
+        ]) ?>
+    </div>
 </div>

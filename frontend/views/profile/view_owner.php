@@ -12,28 +12,20 @@ $this->params['breadcrumbs'][] = ['label' => 'Profiles', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 YiiAsset::register($this);
 ?>
-<div class="profile-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Update', ['update', 'link' => $model->link], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'link' => $model->link], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'link',
-            'name',
-            'description:ntext',
-        ],
-    ]) ?>
-
+<?= Html::a('Edit', ['update', 'link' => $model->link], ['class' => 'btn btn-primary']) ?>
+<?= Html::a('Delete', ['delete', 'link' => $model->link], [
+    'class' => 'btn btn-danger ml-2',
+    'data' => [
+        'confirm' => 'Are you sure you want to delete this item?',
+        'method' => 'post',
+    ],
+])?>
+<div class="card m-3" style="width: 100%;">
+    <img src="https://i.ytimg.com/vi/muurR5-Je1o/hqdefault.jpg" class="card-img-top" alt="test żeber">
+    <div class="card-body">
+        <h5 class="card-title mb-5 text-center"><?= $model->name ?></h5>
+        <p class="card-text"><?= Yii::$app->formatter->asParagraphs($model->description) ?></p>
+    </div>
 </div>
+

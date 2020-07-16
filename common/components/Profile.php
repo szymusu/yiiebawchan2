@@ -40,6 +40,17 @@ class Profile extends Component
         return $this->_profile;
     }
 
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->_profile->profile_id;
+    }
+
+    /**
+     * @return bool
+     */
     public function getIsLogged()
     {
         return ($this->get() != null);

@@ -2,11 +2,13 @@
 
 namespace frontend\controllers;
 
+use common\models\Reaction;
 use Yii;
 use common\models\Post;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -26,6 +28,7 @@ class PostController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'react' => ['POST'],
                 ],
             ],
             'access' => [
@@ -130,6 +133,31 @@ class PostController extends Controller
         }
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     * @param $id string
+     * @param $type int
+     * @throws NotFoundHttpException if the model cannot be found
+     * @throws ForbiddenHttpException if user has no access
+     */
+    public function actionReact($id, $type)
+    {
+        $model = $this->findModel($id);
+        if (!($model->canIAccess()))
+        {
+            throw new ForbiddenHttpException();
+        }
+        $reactionQuery = Reaction::find()->specific($id, $type);
+        if ($reactionQuery->exists())
+        {
+            $reactionQuery->one()->delete();
+        }
+        else
+        {
+            $reaction = new Reaction(['type' => $type, 'post_id' => $model->post_id, 'profile_id' => Yii::$app->profile->getId()]);
+            $reaction->save();
+        }
     }
 
     /**
