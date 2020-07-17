@@ -50,13 +50,23 @@ class ReactionQuery extends \yii\db\ActiveQuery
         return $this->andWhere(['type' => $type]);
     }
 
+	/**
+	 * @param $profileId string
+	 * @return ReactionQuery
+	 */
+	public function profile($profileId)
+	{
+		return $this->andWhere(['profile_id' => $profileId]);
+    }
+
     /**
      * @param $postId string
      * @param $type int
+     * @param $profileId string
      * @return ReactionQuery
      */
-    public function specific($postId, $type)
+    public function specific($postId, $type, $profileId)
     {
-        return $this->post($postId)->type($type);
+        return $this->post($postId)->type($type)->profile($profileId);
     }
 }

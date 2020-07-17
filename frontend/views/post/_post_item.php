@@ -27,7 +27,9 @@ use yii\web\View;
             <?php
             if (empty($isPostPage))
             {
-                echo Html::a('Open post page', ['view', 'id' => $model->post_id], [ 'class' => 'btn btn-primary', ]);
+	            echo Html::a('Open', ['view', 'id' => $model->post_id], [
+	                'class' => 'btn btn-primary ml-1', 'data' => ['method' => 'get']
+                ]);
             }
             else
             {
@@ -49,12 +51,17 @@ use yii\web\View;
     </div>
     <div><?= Yii::$app->formatter->asParagraphs($model->content) ?></div>
     <div class="mt-3">
-        <?= $model->getReactionCount() . ' reactions' ?>
-        <?= Html::a('React', ['react', 'id' => $model->post_id, 'type' => 1], [
-            'class' => 'btn btn-primary ml-2',
-            'data' => [
-                'method' => 'post'
-            ]
-        ]) ?>
+	    <?php \yii\widgets\Pjax::begin() ?>
+        <?php
+        if (!empty($isPostPage))
+        {
+	        echo $this->render('_reaction_bar', ['model' => $model]);
+        }
+        else
+	    {
+		    echo $this->render('_reaction_bar', ['model' => $model]);
+	    }
+        ?>
+	    <?php \yii\widgets\Pjax::end() ?>
     </div>
 </div>

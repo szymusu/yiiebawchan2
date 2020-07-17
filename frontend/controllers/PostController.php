@@ -24,11 +24,11 @@ class PostController extends Controller
     public function behaviors()
     {
         return [
-            'verbs' => [
+            'verb' => [
                 'class' => VerbFilter::class,
                 'actions' => [
-                    'delete' => ['POST'],
-                    'react' => ['POST'],
+                    'delete' => ['post'],
+                    'react' => ['post'],
                 ],
             ],
             'access' => [
@@ -66,9 +66,9 @@ class PostController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('_post_item', [
-            'model' => $this->findModel($id),
-            'isPostPage' => true,
+	    $model = $this->findModel($id);
+        return $this->render('view', [
+            'model' => $model,
         ]);
     }
 
@@ -105,7 +105,7 @@ class PostController extends Controller
      */
     public function actionEdit($id)
     {
-        $model = $this->findModel($id);
+	    $model = $this->findModel($id);
         if (!($model->isMine())) $this->goBack();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -141,14 +141,14 @@ class PostController extends Controller
      * @throws NotFoundHttpException if the model cannot be found
      * @throws ForbiddenHttpException if user has no access
      */
-    public function actionReact($id, $type)
+    public function actionReact($id, $type = 1)
     {
         $model = $this->findModel($id);
         if (!($model->canIAccess()))
         {
             throw new ForbiddenHttpException();
         }
-        $reactionQuery = Reaction::find()->specific($id, $type);
+        $reactionQuery = Reaction::find()->specific($id, $type, Yii::$app->profile->getId());
         if ($reactionQuery->exists())
         {
             $reactionQuery->one()->delete();
@@ -158,6 +158,7 @@ class PostController extends Controller
             $reaction = new Reaction(['type' => $type, 'post_id' => $model->post_id, 'profile_id' => Yii::$app->profile->getId()]);
             $reaction->save();
         }
+        return $this->renderAjax('_reaction_bar', ['model' => $model]);
     }
 
     /**
