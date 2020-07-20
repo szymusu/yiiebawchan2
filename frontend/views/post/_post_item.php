@@ -51,17 +51,8 @@ use yii\web\View;
     </div>
     <div><?= Yii::$app->formatter->asParagraphs($model->content) ?></div>
     <div class="mt-3">
-	    <?php \yii\widgets\Pjax::begin() ?>
-        <?php
-        if (!empty($isPostPage))
-        {
-	        echo $this->render('_reaction_bar', ['model' => $model]);
-        }
-        else
-	    {
-		    echo $this->render('_reaction_bar', ['model' => $model]);
-	    }
-        ?>
+	    <?php \yii\widgets\Pjax::begin(['scrollTo' => false]) ?>
+        <?= $this->render('_reaction_bar', ['model' => $model]); ?>
 	    <?php \yii\widgets\Pjax::end() ?>
     </div>
 </div>

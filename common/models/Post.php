@@ -145,4 +145,27 @@ class Post extends ActiveRecord
     {
         return Reaction::find()->post($this->post_id)->count();
     }
+
+	/**
+	 * @param $profileId string
+	 * @return array
+	 */
+	public function getReactionsFromProfile($profileId)
+	{
+		$reactions = [];
+		foreach (Reaction::$TYPE as $item)
+		{
+			$item['state'] = Reaction::find()->specific($this->post_id, $item['type'], $profileId)->exists();
+			$reactions[$item['name']] = $item;
+		}
+		return $reactions;
+    }
+
+	/**
+	 * @return array
+	 */
+	public function getMyReactions()
+	{
+		return $this->getReactionsFromProfile(Yii::$app->profile->getId());
+	}
 }

@@ -3,6 +3,7 @@
 namespace common\models;
 
 use common\models\query\ReactionQuery;
+use phpDocumentor\Reflection\Types\Array_;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 
@@ -20,6 +21,25 @@ use yii\behaviors\TimestampBehavior;
  */
 class Reaction extends \yii\db\ActiveRecord
 {
+	public static $TYPE = [
+		'YES' => [
+			'type' => 1,
+			'name' => 'YES'
+		],
+		'NOOO' => [
+			'type' => 2,
+			'name' => 'NOOO'
+		],
+		'XDD' => [
+			'type' => 3,
+			'name' => 'XDD'
+		],
+		'WTF¿?' => [
+			'type' => 4,
+			'name' => 'WTF¿?'
+		],
+	];
+
 	/**
 	 * {@inheritdoc}
 	 */
