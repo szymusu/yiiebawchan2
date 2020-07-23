@@ -3,11 +3,16 @@
  * @var $model Post
  * @var $isPostPage bool
  * @var $this View
+ * @var $dataProvider ActiveDataProvider
  */
 
+use common\models\Comment;
 use common\models\Post;
+use yii\data\ActiveDataProvider;
 use yii\helpers\Html;
 use yii\web\View;
+use yii\widgets\ListView;
+use yii\widgets\Pjax;
 
 ?>
 
@@ -20,7 +25,7 @@ use yii\web\View;
             . Yii::$app->formatter->asDate($model->created_at, 'medium') . ', '
             . Yii::$app->formatter->asTime($model->created_at, 'short')
             ?>
-        </span>
+            </span>
         </div>
 
         <div class="col text-right">
@@ -51,8 +56,31 @@ use yii\web\View;
     </div>
     <div><?= Yii::$app->formatter->asParagraphs($model->content) ?></div>
     <div class="mt-3">
-	    <?php \yii\widgets\Pjax::begin(['scrollTo' => false]) ?>
+	    <?php Pjax::begin(['scrollTo' => false]) ?>
         <?= $this->render('_reaction_bar', ['model' => $model]); ?>
-	    <?php \yii\widgets\Pjax::end() ?>
+	    <?php Pjax::end() ?>
+    </div>
+
+    <div class="mb-5 mt-5 p-0 pb-1 border border-dark rounded"></div>
+
+    <div class="container">
+        <?php Pjax::begin() ?>
+        <?= $this->render('_comment_form', ['model' => $model]) ?>
+        <?php Pjax::end() ?>
+    </div>
+    <div class="container">
+	    <?php Pjax::begin(); ?>
+        <?php $dataProvider = new ActiveDataProvider([
+		    'query' => Comment::find()->onPost($model)->reply(false)->latest(),
+        ]) ?>
+	    <?= ListView::widget([
+		    'dataProvider' => $dataProvider,
+		    'itemOptions' => ['tag' => false],
+		    'layout' => '<div class="container">{items}</div>',
+		    'itemView' => '_comment_item',
+		    'emptyText' => false,
+	    ]) ?>
+
+	    <?php Pjax::end(); ?>
     </div>
 </div>

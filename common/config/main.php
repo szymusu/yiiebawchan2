@@ -11,7 +11,12 @@ return [
         ],
         'assetManager' => [
             'appendTimestamp' => true
-        ]
+        ],
+	    'request' => [
+		    'parsers' => [
+			    'application/json' => 'yii\web\JsonParser',
+		    ]
+	    ]
     ],
     'name' => 'JeBaWchAn',
 ];

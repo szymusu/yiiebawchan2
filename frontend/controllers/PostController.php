@@ -2,16 +2,18 @@
 
 namespace frontend\controllers;
 
+use common\models\Comment;
 use common\models\Reaction;
 use Yii;
 use common\models\Post;
+use yii\base\Exception;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
-use yii\web\MethodNotAllowedHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * PostController implements the CRUD actions for Post model.
@@ -39,7 +41,12 @@ class PostController extends Controller
                         'roles' => ['@'],
                     ],
                 ]
-            ]
+            ],
+	        [
+		        'class' => 'yii\filters\ContentNegotiator',
+		        'only' => ['comment'],
+		        'formats' => ['application/json' => Response::FORMAT_JSON]
+	        ]
         ];
     }
 
@@ -50,7 +57,7 @@ class PostController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Post::find()->orderBy(['created_at' => SORT_DESC]),
+            'query' => Post::find()->latest(),
         ]);
 
         return $this->render('index', [
@@ -82,7 +89,7 @@ class PostController extends Controller
     {
         if (!(Yii::$app->profile->getIsLogged()))
         {
-            throw new MethodNotAllowedHttpException('You must be using a profile to post!');
+            throw new ForbiddenHttpException('You must be using a profile to post!');
         }
 
         $model = new Post();
@@ -135,12 +142,13 @@ class PostController extends Controller
         return $this->redirect(['index']);
     }
 
-    /**
-     * @param $id string
-     * @param $type int
-     * @throws NotFoundHttpException if the model cannot be found
-     * @throws ForbiddenHttpException if user has no access
-     */
+	/**
+	 * @param $id string
+	 * @param $type int
+	 * @return mixed
+	 * @throws ForbiddenHttpException if user has no access
+	 * @throws NotFoundHttpException if the model cannot be found
+	 */
     public function actionReact($id, $type = 1)
     {
         $model = $this->findModel($id);
@@ -159,6 +167,31 @@ class PostController extends Controller
             $reaction->save();
         }
         return $this->renderAjax('_reaction_bar', ['model' => $model]);
+    }
+
+	/**
+	 * @param $id string
+	 * @return mixed
+	 * @throws ForbiddenHttpException if user has no access
+	 * @throws NotFoundHttpException if the model cannot be found
+	 * @throws Exception
+	 */
+	public function actionComment($id)
+	{
+		$post = $this->findModel($id);
+		if (!($post->canIAccess()))
+		{
+			throw new ForbiddenHttpException();
+		}
+		$comment = new Comment();
+		if ($comment->load(Yii::$app->request->post()) && $comment->saveNew($id))
+		{
+			return 'a';
+		}
+		else
+		{
+			return 'ERROE' . print_r($comment->errors);
+		}
     }
 
     /**

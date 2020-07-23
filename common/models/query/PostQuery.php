@@ -2,14 +2,13 @@
 
 namespace common\models\query;
 
-use yii\db\ActiveQuery;
 
 /**
  * This is the ActiveQuery class for [[\common\models\Post]].
  *
  * @see \common\models\Post
  */
-class PostQuery extends ActiveQuery
+class PostQuery extends \common\models\query\ActiveQuery
 {
     /*public function active()
     {

@@ -131,7 +131,7 @@ class Post extends ActiveRecord
         do
         {
             $randomId = Yii::$app->security->generateRandomString(16);
-        } while (Post::find()->where(['post_id' => $randomId])->exists());
+        } while (Post::find()->where(['post_id' => $randomId])->exists() || Comment::find()->where(['post_id' => $randomId])->exists());
 
         $this->post_id = $randomId;
 
