@@ -172,6 +172,28 @@ class PostController extends Controller
 	/**
 	 * @param $id string
 	 * @return mixed
+	 * @throws NotFoundHttpException
+	 */
+	public function actionGetReplyForm($id)
+	{
+		$comment = Comment::find()->andWhere(['original_comment_id' => $id]);
+		if (!($comment->exists()))
+		{
+			throw new NotFoundHttpException('Original comment missing');
+		}
+		else
+		{
+			$comment = $comment->one();
+			return $this->renderAjax('_comment_form', [
+				'comment' => $comment,
+				'model' => $comment->post,
+			]);
+		}
+    }
+
+	/**
+	 * @param $id string
+	 * @return mixed
 	 * @throws ForbiddenHttpException if user has no access
 	 * @throws NotFoundHttpException if the model cannot be found
 	 * @throws Exception
@@ -184,9 +206,9 @@ class PostController extends Controller
 			throw new ForbiddenHttpException();
 		}
 		$comment = new Comment();
-		if ($comment->load(Yii::$app->request->post()) && $comment->saveNew($id))
+		if ($comment->load(Yii::$app->request->post()) && $comment->saveNew($id, $comment->original_comment_id ?? false))
 		{
-			return 'a';
+			return $this->renderAjax('_comment_item', ['model' => $comment]);
 		}
 		else
 		{

@@ -12,7 +12,7 @@ use yii\widgets\Pjax;
 
 ?>
 
-<div class="container mb-5 mt-4 border-bottom <?= $model->is_reply ? 'ml-5' : '' ?>">
+<div class="container mt-4 border-bottom <?= $model->is_reply ? 'ml-5' : '' ?>">
 	<div class="col mb-2">
 		<strong><?= Html::a($model->profile->name, '/profile/view/' . $model->profile->link) ?></strong><br/>
 		<span class="text-muted">
@@ -22,8 +22,16 @@ use yii\widgets\Pjax;
             ?>
 		</span>
 	</div>
-	<div class="ml-3"><?= Yii::$app->formatter->asParagraphs($model->content) ?></div>
-	<?php
+    <?= Yii::$app->formatter->asParagraphs($model->content) ?>
+    <?php Pjax::begin() ?>
+    <?= Html::a('Reply', ['get-reply-form', 'id' => $model->original_comment_id], [
+        'class' => 'btn btn-primary',
+        'data' => ['method' => 'get', 'pjax' => '1'],
+    ]); ?>
+    <?php Pjax::end() ?>
+</div>
+<div class="ml-3">
+    <?php
     if (!($model->is_reply))
     {
         Pjax::begin();
@@ -33,12 +41,11 @@ use yii\widgets\Pjax;
         echo ListView::widget([
             'dataProvider' => $dataProvider,
             'itemOptions' => ['tag' => false],
-            'layout' => '<div class="container">{items}</div>',
+            'layout' => '<div class="container comment-container">{items}</div>',
             'itemView' => '_comment_item',
-	        'emptyText' => false,
+            'emptyText' => false,
         ]);
         Pjax::end();
     }
-	?>
-
+    ?>
 </div>

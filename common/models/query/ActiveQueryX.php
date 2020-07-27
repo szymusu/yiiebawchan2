@@ -4,7 +4,7 @@
 namespace common\models\query;
 
 
-class ActiveQuery extends \yii\db\ActiveQuery
+trait ActiveQueryX
 {
 	public function latest()
 	{

@@ -16,7 +16,7 @@ class AppAsset extends AssetBundle
     ];
     public $js = [
 	    'js/autoresize.js',
-	    'js/ajaxComment.js',
+	    'js/ajaxCommentSend.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

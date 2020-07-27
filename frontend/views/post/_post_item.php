@@ -16,7 +16,7 @@ use yii\widgets\Pjax;
 
 ?>
 
-<div class="container mb-5 mt-4 border border-dark p-4 rounded">
+<div class="container mb-5 mt-4 border border-dark p-4 rounded post-item">
     <div class="mb-3 row">
         <div class="col">
             <strong><?= Html::a($model->profile->name, '/profile/view/' . $model->profile->link) ?></strong><br/>
@@ -76,7 +76,7 @@ use yii\widgets\Pjax;
 	    <?= ListView::widget([
 		    'dataProvider' => $dataProvider,
 		    'itemOptions' => ['tag' => false],
-		    'layout' => '<div class="container">{items}</div>',
+		    'layout' => '<div class="container comment-container">{items}</div>',
 		    'itemView' => '_comment_item',
 		    'emptyText' => false,
 	    ]) ?>

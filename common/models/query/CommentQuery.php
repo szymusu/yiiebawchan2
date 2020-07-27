@@ -4,6 +4,7 @@ namespace common\models\query;
 
 use common\models\Comment;
 use common\models\Post;
+use yii\db\ActiveQuery;
 
 /**
  * This is the ActiveQuery class for [[\common\models\Comment]].
@@ -12,10 +13,7 @@ use common\models\Post;
  */
 class CommentQuery extends ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
+	use ActiveQueryX;
 
     /**
      * {@inheritdoc}

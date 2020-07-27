@@ -3,17 +3,16 @@
 namespace common\models\query;
 
 
+use yii\db\ActiveQuery;
+
 /**
  * This is the ActiveQuery class for [[\common\models\Post]].
  *
  * @see \common\models\Post
  */
-class PostQuery extends \common\models\query\ActiveQuery
+class PostQuery extends ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
+    use ActiveQueryX;
 
     /**
      * {@inheritdoc}
