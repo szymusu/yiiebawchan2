@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\models\Comment;
+use common\models\Group;
 use common\models\Reaction;
 use Yii;
 use common\models\Post;
@@ -82,19 +83,21 @@ class PostController extends Controller
     /**
      * Creates a new Post model.
      * If creation is successful, the browser will be redirected to the 'view' page.
+     * @param string $group
      * @return mixed
-     * @throws \yii\base\Exception
+     * @throws Exception
      */
-    public function actionCreate()
+    public function actionCreate($group)
     {
-        if (!(Yii::$app->profile->getIsLogged()))
+    	$groupModel = Group::findByLink($group);
+        if (!($groupModel->isAllowedToPost(Yii::$app->profile->getId())))
         {
-            throw new ForbiddenHttpException('You must be using a profile to post!');
+            throw new ForbiddenHttpException("You can't post here");
         }
 
         $model = new Post();
 
-        if ($model->load(Yii::$app->request->post()) && $model->saveNew(Yii::$app->profile->get())) {
+        if ($model->load(Yii::$app->request->post()) && $model->saveNew(Yii::$app->profile->get(), $groupModel)) {
             return $this->redirect(['view', 'id' => $model->post_id]);
         }
 

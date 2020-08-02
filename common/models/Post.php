@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\models\query\GroupQuery;
 use common\models\query\PostQuery;
 use common\models\query\ProfileQuery;
 use Yii;
@@ -16,6 +17,7 @@ use yii\db\ActiveRecord;
  * @property string $post_id
  * @property int|null $user_id
  * @property string $profile_id
+ * @property string $group_id
  * @property string|null $content
  * @property int $created_at
  *
@@ -54,10 +56,11 @@ class Post extends ActiveRecord
             [['post_id', 'profile_id'], 'required'],
             [['user_id', 'created_at'], 'integer'],
             [['content'], 'string'],
-            [['post_id', 'profile_id'], 'string', 'max' => 16],
+            [['post_id', 'profile_id', 'group_id'], 'string', 'max' => 16],
             [['post_id'], 'unique'],
             [['profile_id'], 'exist', 'skipOnError' => true, 'targetClass' => Profile::class, 'targetAttribute' => ['profile_id' => 'profile_id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+	        [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+	        [['group_id'], 'exist', 'skipOnError' => true, 'targetClass' => Group::class, 'targetAttribute' => ['group_id' => 'group_id']],
         ];
     }
 
@@ -68,7 +71,8 @@ class Post extends ActiveRecord
     {
         return [
             'post_id' => 'Post ID',
-            'user_id' => 'User ID',
+	        'user_id' => 'User ID',
+	        'group_id' => 'Group ID',
             'profile_id' => 'Profile ID',
             'content' => 'Content',
         ];
@@ -94,6 +98,16 @@ class Post extends ActiveRecord
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
+	/**
+	 * Gets query for [[Group]].
+	 *
+	 * @return ActiveQuery|GroupQuery
+	 */
+	public function getGroup()
+	{
+		return $this->hasOne(Group::class, ['group_id' => 'group_id']);
+	}
+
     /**
      * @return bool
      */
@@ -116,18 +130,20 @@ class Post extends ActiveRecord
      */
     public function canIAccess()
     {
-        return Yii::$app->profile->getIsLogged(); //TODO check for access permissions
+        return $this->getGroup()->one()->isAllowedToPost(Yii::$app->profile->getId());
     }
-    
-    /**
-     * @return bool
-     * @throws Exception
-     * @param $profile Profile
-     */
-    public function saveNew($profile)
+
+	/**
+	 * @param $profile Profile
+	 * @param $group Group
+	 * @return bool
+	 * @throws Exception
+	 */
+    public function saveNew($profile, $group)
     {
         $this->user_id = Yii::$app->user->id;
         $this->profile_id = $profile->profile_id;
+        $this->group_id = $group->group_id;
         do
         {
             $randomId = Yii::$app->security->generateRandomString(16);
@@ -153,10 +169,10 @@ class Post extends ActiveRecord
 	public function getReactionsFromProfile($profileId)
 	{
 		$reactions = [];
-		foreach (Reaction::$TYPE as $item)
+		foreach (Reaction::getAllTypeNames() as $typeName)
 		{
-			$item['state'] = Reaction::find()->specific($this->post_id, $item['type'], $profileId)->exists();
-			$reactions[$item['name']] = $item;
+			$reactions[$typeName] = Reaction::find()
+				->specific($this->post_id, Reaction::getTypeNumber($typeName), $profileId)->exists();
 		}
 		return $reactions;
     }

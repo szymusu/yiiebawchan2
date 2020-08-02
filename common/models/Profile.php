@@ -80,11 +80,29 @@ class Profile extends ActiveRecord
         return new ProfileQuery(get_called_class());
     }
 
+	/**
+	 * @param string $link
+	 * @return Profile|null
+	 */
+	public static function findByLink($link)
+	{
+		return Profile::findOne(['link' => $link]);
+    }
+
+	/**
+	 * @param string $id
+	 * @return Profile|null
+	 */
+	public static function findById($id)
+	{
+		return Profile::findOne(['profile_id' => $id]);
+	}
+
     /**
      * @return bool
      * @throws \yii\base\Exception
      */
-    public function newRecord()
+    public function saveNew()
     {
         $this->user_id = Yii::$app->user->id;
         do
@@ -95,7 +113,7 @@ class Profile extends ActiveRecord
         $this->profile_id = $randomId;
         $this->fillLink();
 
-        return true;
+        return $this->save();
     }
 
     /**

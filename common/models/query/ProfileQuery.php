@@ -5,19 +5,15 @@ namespace common\models\query;
 use common\models\Profile;
 use common\models\User;
 use Yii;
+use yii\db\ActiveQuery;
 
 /**
  * This is the ActiveQuery class for [[\common\models\Profile]].
  *
  * @see \common\models\Profile
  */
-class ProfileQuery extends \yii\db\ActiveQuery
+class ProfileQuery extends ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
-
     /**
      * {@inheritdoc}
      * @return Profile[]|array

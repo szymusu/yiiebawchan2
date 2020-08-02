@@ -1,10 +1,14 @@
 <?php
 /**
- * @var $reaction array
+ * @var $reactionName string
+ * @var $reactionState bool
  * @var $postId string
  */
 
-echo \yii\helpers\Html::a($reaction['name'], ['react', 'id' => $postId, 'type' => $reaction['type']], [
-	'class' => 'btn mr-2 ' . ($reaction['state'] ? 'btn-primary' : 'btn-secondary'),
+use common\models\Reaction;
+use yii\helpers\Html;
+
+echo Html::a($reactionName, ['/post/react', 'id' => $postId, 'type' => Reaction::getTypeNumber($reactionName)], [
+	'class' => 'btn mr-2 ' . ($reactionState ? 'btn-primary' : 'btn-secondary'),
 	'data' => ['method' => 'post', 'pjax' => '1'],
 ]);

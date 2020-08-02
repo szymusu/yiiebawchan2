@@ -6,6 +6,7 @@ use common\models\query\CommentQuery;
 use Yii;
 use yii\base\Exception;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%comment}}".
@@ -21,7 +22,7 @@ use yii\behaviors\TimestampBehavior;
  * @property Post $post
  * @property Profile $profile
  */
-class Comment extends \yii\db\ActiveRecord
+class Comment extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -111,8 +112,11 @@ class Comment extends \yii\db\ActiveRecord
 	 */
 	public function setProfile($profile = false)
 	{
-		if ($profile === false) $profile = Yii::$app->profile;
-
+		if ($profile === false)
+        {
+            $profile = Yii::$app->profile;
+        }
+                    
 		if ($profile->getIsLogged())
 		{
 			$this->profile_id = $profile->getId();
@@ -136,6 +140,7 @@ class Comment extends \yii\db\ActiveRecord
 			$randomId = Yii::$app->security->generateRandomString(16);
 		} while (Post::find()->where(['post_id' => $randomId])->exists() ||
 			  Comment::find()->where(['post_id' => $randomId])->exists());
+                
 		$this->comment_id = $randomId;
 
 		if (!$replyToId)

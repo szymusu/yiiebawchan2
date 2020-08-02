@@ -2,11 +2,8 @@
 /**
  * @var $model \common\models\Post
  * @var $this \yii\web\View
- * @var $reactions array
+ * @var $reactions array<string, bool>
  */
-
-use yii\helpers\Url;
-
 
 $reactions = $model->getMyReactions();
 $postId = $model->post_id;
@@ -14,7 +11,7 @@ $postId = $model->post_id;
 
 <div><?= $model->getReactionCount() ?> total reactions</div>
 
-<?php foreach ($reactions as $reaction)
+<?php foreach ($reactions as $name => $state)
 {
-    echo $this->render('_reaction_btn', ['reaction' => $reaction, 'postId' => $postId]);
+    echo $this->render('_reaction_btn', ['reactionName' => $name, 'reactionState' => $state, 'postId' => $postId]);
 }?>

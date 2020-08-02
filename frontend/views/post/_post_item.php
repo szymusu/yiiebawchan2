@@ -32,7 +32,7 @@ use yii\widgets\Pjax;
             <?php
             if (empty($isPostPage))
             {
-	            echo Html::a('Open', ['view', 'id' => $model->post_id], [
+	            echo Html::a('Open', ['/post/view', 'id' => $model->post_id], [
 	                'class' => 'btn btn-primary ml-1', 'data' => ['method' => 'get']
                 ]);
             }

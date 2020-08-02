@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use Yii;
 use common\models\Profile;
+use yii\base\Exception;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -78,12 +79,13 @@ class ProfileController extends Controller
      * Creates a new Profile model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
+     * @throws Exception
      */
     public function actionCreate()
     {
         $model = new Profile();
 
-        if ($model->load(Yii::$app->request->post()) && $model->newRecord() && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->saveNew()) {
             return $this->redirect(['view', 'link' => $model->link]);
         }
 
@@ -155,7 +157,6 @@ class ProfileController extends Controller
     }
 
     /**
-     * Finds the Profile model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param string $link
      * @return Profile the loaded model
@@ -163,7 +164,7 @@ class ProfileController extends Controller
      */
     protected function findModelByLink($link)
     {
-        if (($model = Profile::findOne(['link' => $link])) !== null) {
+        if (($model = Profile::findByLink($link)) !== null) {
             return $model;
         }
         throw new NotFoundHttpException('The requested page does not exist.');

@@ -2,7 +2,6 @@
 
 namespace common\models\query;
 
-
 use yii\db\ActiveQuery;
 
 /**
@@ -12,7 +11,7 @@ use yii\db\ActiveQuery;
  */
 class PostQuery extends ActiveQuery
 {
-    use ActiveQueryX;
+	use ActiveQueryX;
 
     /**
      * {@inheritdoc}
@@ -30,5 +29,14 @@ class PostQuery extends ActiveQuery
     public function one($db = null)
     {
         return parent::one($db);
+    }
+
+	/**
+	 * @param string $groupId
+	 * @return PostQuery
+	 */
+	public function group($groupId)
+	{
+		return $this->andWhere(['group_id' => $groupId]);
     }
 }

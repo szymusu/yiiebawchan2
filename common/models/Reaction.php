@@ -3,9 +3,8 @@
 namespace common\models;
 
 use common\models\query\ReactionQuery;
-use phpDocumentor\Reflection\Types\Array_;
-use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%reaction}}".
@@ -19,25 +18,18 @@ use yii\behaviors\TimestampBehavior;
  * @property Post $post
  * @property Profile $profile
  */
-class Reaction extends \yii\db\ActiveRecord
+class Reaction extends ActiveRecord
 {
+	use TypeArrayUtils;
+
+	/**
+	 * @var array<string, int>
+	 */
 	public static $TYPE = [
-		'YES' => [
-			'type' => 1,
-			'name' => 'YES'
-		],
-		'NOOO' => [
-			'type' => 2,
-			'name' => 'NOOO'
-		],
-		'XDD' => [
-			'type' => 3,
-			'name' => 'XDD'
-		],
-		'WTF¿?' => [
-			'type' => 4,
-			'name' => 'WTF¿?'
-		],
+		'YES' => 1,
+		'NOOO' => 2,
+		'XDD' => 3,
+		'WTF¿?' => 4,
 	];
 
 	/**

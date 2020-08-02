@@ -1,4 +1,7 @@
 <?php
+
+use common\components\Profile;
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -43,11 +46,13 @@ return [
             'rules' => [
                 '/profile/view/<link>' => '/profile/view',
                 '/profile/update/<link>' => '/profile/update',
-                '/post/view/<id>' => '/post/view'
+	            '/post/view/<id>' => '/post/view',
+                '/group/view/<link>' => '/group/view',
+                '/group/join/<link>' => '/group/join',
             ],
         ],
         'profile' => [
-            'class' => \common\components\Profile::class,
+            'class' => Profile::class,
         ],
 
     ],

@@ -1,0 +1,219 @@
+<?php
+
+namespace frontend\controllers;
+
+use common\models\GroupMember;
+use common\models\Post;
+use common\models\Profile;
+use Error;
+use Yii;
+use common\models\Group;
+use yii\base\Exception;
+use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
+
+/**
+ * GroupController implements the CRUD actions for Group model.
+ */
+class GroupController extends Controller
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+	                'delete' => ['POST'],
+//	                'join' => ['POST'],
+                ],
+            ],
+	        'access' => [
+		        'class' => AccessControl::class,
+		        'rules' => [
+			        [
+				        'allow' => true,
+				        'roles' => ['@'],
+			        ],
+		        ]
+	        ]
+        ];
+    }
+
+    /**
+     * Lists all Group models.
+     * @return mixed
+     */
+    public function actionIndex()
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => Group::find(),
+        ]);
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Displays a single Group model.
+     * @param string $link
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionView($link)
+    {
+    	$model = $this->findModelByLink($link);
+    	if ($model->isAllowedMember(Yii::$app->profile->getId()))
+	    {
+		    $view = 'view_full';
+		    $dataProvider = new ActiveDataProvider([
+			    'query' => Post::find()->group($model->group_id)->latest(),
+		    ]);
+	    }
+    	else
+	    {
+		    $view = 'view_limited';
+		    $dataProvider = new ActiveDataProvider([
+			    'query' => Profile::find()
+				    ->leftJoin(GroupMember::tableName(), 'profile.profile_id = group_member.profile_id')
+		    ]);
+	    }
+
+
+        return $this->render($view, [
+            'model' => $model,
+	        'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * Creates a new Group model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     * @throws Exception
+     */
+    public function actionCreate()
+    {
+        $model = new Group();
+
+        if ($model->load(Yii::$app->request->post()) && $model->saveNew()) {
+            return $this->redirect(['view', 'link' => $model->link]);
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Updates an existing Group model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param string $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->fillLink() && $model->save()) {
+	        return $this->redirect(['view', 'link' => $model->link]);
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
+
+	/**
+	 * Deletes an existing Group model.
+	 * If deletion is successful, the browser will be redirected to the 'index' page.
+	 * @param string $id
+	 * @return mixed
+	 * @throws NotFoundHttpException if the model cannot be found
+	 */
+    public function actionDelete($id)
+    {
+        $this->findModel($id)->delete();
+
+        return $this->redirect(['index']);
+    }
+
+	/**
+	 * @param string $link
+	 * @param bool|string $profileId
+	 * @param bool $cancelRequest
+	 * @return mixed
+	 * @throws NotFoundHttpException
+	 */
+	public function actionJoin($link, $profileId = false, $cancelRequest = false)
+	{
+		$model = $this->findModelByLink($link);
+		if (!$profileId)
+		{
+			$profileId = Yii::$app->profile->getId();
+		}
+		else
+		{
+			$profile = Profile::findById($profileId);
+			if (!($profile->isMine()))
+			{
+				return $this->redirect(['view', 'link' => $link]);
+			}
+		}
+
+		if ($cancelRequest)
+		{
+			try
+			{
+				GroupMember::find()->joinRequest($model->group_id, $profileId)->one()->delete();
+			}
+			catch (Error $e)
+			{
+				throw new NotFoundHttpException('Cannot cancel not existing request');
+			}
+		}
+		else if (!($model->hasJoinRequest($profileId)) && !($model->isMember($profileId)))
+		{
+			$member = new GroupMember();
+			$member->newJoinRequest($model->group_id, $profileId);
+		}
+		return $this->redirect(['view', 'link' => $link]);
+    }
+
+    /**
+     * Finds the Group model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param string $id
+     * @return Group the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id)
+    {
+        if (($model = Group::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+	/**
+	 * If the model is not found, a 404 HTTP exception will be thrown.
+	 * @param string $link
+	 * @return Group the loaded model
+	 * @throws NotFoundHttpException if the model cannot be found
+	 */
+	protected function findModelByLink($link)
+	{
+		if (($model = Group::findOne(['link' => $link])) !== null) {
+			return $model;
+		}
+		throw new NotFoundHttpException('The requested page does not exist.');
+	}
+}

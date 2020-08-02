@@ -18,7 +18,7 @@ if (empty($comment))
 
 <div class="post-form border-top">
 
-    <?php $form = ActiveForm::begin(['action' => ['post/comment', 'id' => $model->post_id], 'options' => [
+    <?php $form = ActiveForm::begin(['action' => ['/post/comment', 'id' => $model->post_id], 'options' => [
 	    'class' => 'form-post-comment',
         'data-pjax' => '1',
         'onfocusin' => 'prepareForSend(this)' //TODO do it normally, this is total hack
