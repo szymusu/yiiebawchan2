@@ -8,6 +8,7 @@ use yii\base\Exception;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -106,8 +107,8 @@ class ProfileController extends Controller
         $model = $this->findModelByLink($link);
         if (!($model->isMine())) $this->goBack();
 
-        if ($model->load(Yii::$app->request->post()) && $model->fillLink() && $model->save()) {
-            return $this->redirect(['view', 'link' => $model->link]);
+        if ($model->load(Yii::$app->request->post()) && $model->processLink($link, $model->link, $model->profile_id) && $model->save()) {
+	        return $this->redirect(['view', 'link' => $model->link]);
         }
 
         return $this->render('update', [
@@ -134,10 +135,16 @@ class ProfileController extends Controller
         return $this->redirect(['index']);
     }
 
+	/**
+	 * @param string $link
+	 * @return mixed
+	 * @throws NotFoundHttpException
+	 * @throws ForbiddenHttpException
+	 */
     public function actionSwitch($link)
     {
         Yii::$app->profile->switchTo($this->findModelByLink($link));
-        return $this->redirect('index');
+        return $this->goBack(); //TODO WTF
     }
 
     /**

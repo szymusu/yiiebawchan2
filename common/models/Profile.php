@@ -4,6 +4,7 @@ namespace common\models;
 
 use common\models\query\ProfileQuery;
 use Yii;
+use yii\base\Exception;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -21,6 +22,8 @@ use yii\db\ActiveRecord;
  */
 class Profile extends ActiveRecord
 {
+	use UniqueLinkUtils;
+
     /**
      * {@inheritdoc}
      */
@@ -98,35 +101,66 @@ class Profile extends ActiveRecord
 		return Profile::findOne(['profile_id' => $id]);
 	}
 
-    /**
+	/**
      * @return bool
-     * @throws \yii\base\Exception
      */
     public function saveNew()
     {
         $this->user_id = Yii::$app->user->id;
-        do
-        {
-            $randomId = Yii::$app->security->generateRandomString(16);
-        } while (Profile::find()->where(['profile_id' => $randomId])->exists());
 
-        $this->profile_id = $randomId;
-        $this->fillLink();
+	    try
+	    {
+		    $uid = UniqueId::newRandom($this->link);
+	    }
+	    catch (Exception $e)
+	    {
+	    	return false;
+	    }
+
+	    $this->profile_id = $uid->id;
+        $this->link = $uid->link;
 
         return $this->save();
     }
 
-    /**
-     * @return bool
-     */
-    public function fillLink()
-    {
-        if ($this->link == null)
-        {
-            $this->link = $this->profile_id;
-        }
-        return true;
-    }
+//    /**
+//     * @param string $previousLink
+//     * @return bool
+//     */
+//    public function processLink($previousLink)
+//    {
+//
+//        if ($this->link === $previousLink)
+//        {
+//            return true;
+//        }
+//        else
+//        {
+//            $duplicate = UniqueId::findOne($this->link);
+//        	if ($this->profile_id !== $previousLink && $duplicate == null)
+//	        {
+//        	    UniqueId::tryDelete($previousLink);
+//	        }
+//            if (!($this->link))
+//            {
+//                $this->link = $this->profile_id;
+//                return true;
+//            }
+//            if ($duplicate != null)
+//            {
+//            	if ($duplicate->id === $this->profile_id)
+//	            {
+//	            	return true;
+//	            }
+//	            Yii::$app->session->setFlash('linkExists', 'This link is already in use');
+//            	return false;
+//            }
+//
+//        	$uid = new UniqueId();
+//        	$uid->id = $this->link;
+//        	return $uid->save();
+//        }
+//    }
 
     /**
      * @param $user User
@@ -150,4 +184,21 @@ class Profile extends ActiveRecord
         $this->last_login = time();
         $this->save(true, ['last_login']);
     }
+
+	public function setLinkAndId($newLink, $randomId)
+	{
+		$this->link = $newLink;
+		$this->profile_id = $randomId;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function delete()
+	{
+		UniqueId::tryDelete($this->profile_id);
+		UniqueId::tryDelete($this->link);
+
+		return parent::delete();
+	}
 }

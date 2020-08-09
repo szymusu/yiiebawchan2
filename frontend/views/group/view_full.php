@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	<h1><?= Html::encode($this->title) ?></h1>
 
 	<p>
-		<?= Html::a('Create Post', ['/post/create', 'group' => $model->group_id], ['class' => 'btn btn-success']) ?>
+		<?= Html::a('Create Post', ['/post/create', 'group' => $model->link], ['class' => 'btn btn-success']) ?>
 	</p>
 
 	<?php Pjax::begin(); ?>

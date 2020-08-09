@@ -144,12 +144,17 @@ class Post extends ActiveRecord
         $this->user_id = Yii::$app->user->id;
         $this->profile_id = $profile->profile_id;
         $this->group_id = $group->group_id;
-        do
-        {
-            $randomId = Yii::$app->security->generateRandomString(16);
-        } while (Post::find()->where(['post_id' => $randomId])->exists() || Comment::find()->where(['post_id' => $randomId])->exists());
 
-        $this->post_id = $randomId;
+	    try
+	    {
+		    $uid = UniqueId::newRandom();
+	    }
+	    catch (Exception $e)
+	    {
+		    return false;
+	    }
+
+        $this->post_id = $uid->id;
 
         return $this->save();
     }
@@ -183,5 +188,15 @@ class Post extends ActiveRecord
 	public function getMyReactions()
 	{
 		return $this->getReactionsFromProfile(Yii::$app->profile->getId());
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function delete()
+	{
+		UniqueId::tryDelete($this->post_id);
+
+		return parent::delete();
 	}
 }

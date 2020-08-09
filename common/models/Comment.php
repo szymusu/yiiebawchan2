@@ -129,19 +129,23 @@ class Comment extends ActiveRecord
 	 * @param $postId string
 	 * @param $replyToId string | bool
 	 * @param $profile \common\components\Profile | bool
-	 * @throws Exception
+	 * @return bool
 	 */
 	public function saveNew($postId, $replyToId = false, $profile = false)
 	{
 		$this->post_id = $postId;
 		$this->setProfile($profile);
-		do
+
+		try
 		{
-			$randomId = Yii::$app->security->generateRandomString(16);
-		} while (Post::find()->where(['post_id' => $randomId])->exists() ||
-			  Comment::find()->where(['post_id' => $randomId])->exists());
-                
-		$this->comment_id = $randomId;
+			$uid = UniqueId::newRandom();
+		}
+		catch (Exception $e)
+		{
+			return false;
+		}
+
+		$this->comment_id = $uid->id;
 
 		if (!$replyToId)
 		{
@@ -155,5 +159,26 @@ class Comment extends ActiveRecord
 		}
 
 		return $this->save();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function delete()
+	{
+		UniqueId::tryDelete($this->comment_id);
+
+		$this->deleteReplies();
+
+		return parent::delete();
+	}
+
+	private function deleteReplies()
+	{
+		$replies = Comment::find()->replyTo($this)->all();
+		foreach ($replies as $reply)
+		{
+			$reply->delete();
+		}
 	}
 }

@@ -8,11 +8,14 @@
 
 use common\models\Comment;
 use common\models\Post;
+use common\models\query\CommentQuery;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ListView;
 use yii\widgets\Pjax;
+
+if (empty($isPostPage)) $isPostPage = false;
 
 ?>
 
@@ -30,7 +33,7 @@ use yii\widgets\Pjax;
 
         <div class="col text-right">
             <?php
-            if (empty($isPostPage))
+            if (!$isPostPage)
             {
 	            echo Html::a('Open', ['/post/view', 'id' => $model->post_id], [
 	                'class' => 'btn btn-primary ml-1', 'data' => ['method' => 'get']
@@ -70,15 +73,27 @@ use yii\widgets\Pjax;
     </div>
     <div class="container">
 	    <?php Pjax::begin(); ?>
-        <?php $dataProvider = new ActiveDataProvider([
-		    'query' => Comment::find()->onPost($model)->reply(false)->latest(),
-        ]) ?>
+        <?php
+        /** @var CommentQuery $query */
+	    $query = Comment::find()->onPost($model)->reply(false)->latest();
+        $config = [];
+        if (!$isPostPage)
+        {
+	        $query = $query->limit(5);
+	        $config['pagination'] = false;
+        }
+        $config['query'] = $query;
+        $dataProvider = new ActiveDataProvider($config)
+        ?>
 	    <?= ListView::widget([
 		    'dataProvider' => $dataProvider,
 		    'itemOptions' => ['tag' => false],
 		    'layout' => '<div class="container comment-container">{items}</div>',
 		    'itemView' => '_comment_item',
 		    'emptyText' => false,
+		    'viewParams' => [
+			    'isPostPage' => $isPostPage,
+		    ],
 	    ]) ?>
 
 	    <?php Pjax::end(); ?>

@@ -3,7 +3,7 @@
 namespace common\models;
 
 use common\models\query\GroupQuery;
-use Yii;
+use yii\base\Exception;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
@@ -20,6 +20,7 @@ use yii\db\ActiveRecord;
 class Group extends ActiveRecord
 {
 	use TypeArrayUtils;
+	use UniqueLinkUtils;
 
 	/**
 	 * @var array<string, int>
@@ -93,31 +94,32 @@ class Group extends ActiveRecord
 
 	/**
 	 * @return bool
-	 * @throws \yii\base\Exception
 	 */
 	public function saveNew()
 	{
-		do
+		try
 		{
-			$randomId = Yii::$app->security->generateRandomString(16);
-		} while (Group::find()->where(['group_id' => $randomId])->exists());
+			$uid = UniqueId::newRandom($this->link);
+		}
+		catch (Exception $e)
+		{
+			return false;
+		}
 
-		$this->group_id = $randomId;
-		$this->fillLink();
+		$this->group_id = $uid->id;
+		$this->link = $uid->link;
 
 		return $this->save();
 	}
 
 	/**
-	 * @return bool
+	 * @param string $newLink
+	 * @param string $randomId
 	 */
-	public function fillLink()
+	public function setLinkAndId($newLink, $randomId)
 	{
-		if ($this->link == null)
-		{
-			$this->link = $this->group_id;
-		}
-		return true;
+		$this->link = $newLink;
+		$this->group_id = $randomId;
 	}
 
 	/**
@@ -149,6 +151,15 @@ class Group extends ActiveRecord
 
 	/**
 	 * @param string $profileId
+	 * @return bool
+	 */
+	public function isMuted($profileId)
+	{
+		return $this->isMemberType($profileId, GroupMember::getTypeNumber('muted'));
+	}
+
+	/**
+	 * @param string $profileId
 	 * @param int $type
 	 * @return bool
 	 */
@@ -164,6 +175,47 @@ class Group extends ActiveRecord
 	public function isMember($profileId)
 	{
 		return GroupMember::find()->member($this->group_id, $profileId)->exists();
+	}
+
+	/**
+	 * @param string $profileId
+	 * @param int $permissionLevel
+	 * @return bool
+	 */
+	public function hasPermissions($profileId, $permissionLevel)
+	{
+		return (
+			$this->isMember($profileId) &&
+			GroupMember::find()->hasPermissionLevel($this->group_id, $profileId, $permissionLevel)
+		);
+	}
+
+	/**
+	 * @param string $profileId
+	 * @return bool
+	 * Admin also is moderator btw
+	 */
+	public function isModerator($profileId)
+	{
+		return $this->hasPermissions($profileId, GroupMember::getTypeNumber('moderator'));
+	}
+
+	/**
+	 * @param string $profileId
+	 * @return bool
+	 */
+	public function isAdmin($profileId)
+	{
+		return $this->hasPermissions($profileId, GroupMember::getTypeNumber('admin'));
+	}
+
+	/**
+	 * @param string $profileId
+	 * @return bool
+	 */
+	public function isOwner($profileId)
+	{
+		return $this->hasPermissions($profileId, GroupMember::getTypeNumber('owner'));
 	}
 
 	/**
@@ -188,5 +240,16 @@ class Group extends ActiveRecord
 			$this->isMember($profileId) &&
 			GroupMember::find()->hasPermissionLevel($this->group_id, $profileId, GroupMember::getTypeNumber('member'))
 		);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function delete()
+	{
+		UniqueId::tryDelete($this->group_id);
+		UniqueId::tryDelete($this->link);
+
+		return parent::delete();
 	}
 }

@@ -48,7 +48,9 @@ return [
                 '/profile/update/<link>' => '/profile/update',
 	            '/post/view/<id>' => '/post/view',
                 '/group/view/<link>' => '/group/view',
-                '/group/join/<link>' => '/group/join',
+	            '/group/join/<link>' => '/group/join',
+	            '/group/panel/<link>' => '/group/panel',
+	            '/group/update/<link>' => '/group/update',
             ],
         ],
         'profile' => [

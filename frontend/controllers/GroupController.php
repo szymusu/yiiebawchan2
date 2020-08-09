@@ -12,6 +12,7 @@ use yii\base\Exception;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -82,6 +83,8 @@ class GroupController extends Controller
 		    $dataProvider = new ActiveDataProvider([
 			    'query' => Profile::find()
 				    ->leftJoin(GroupMember::tableName(), 'profile.profile_id = group_member.profile_id')
+		            ->andWhere('group_member.type >= 1')
+			        ->onlyMine()
 		    ]);
 	    }
 
@@ -114,15 +117,15 @@ class GroupController extends Controller
     /**
      * Updates an existing Group model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
+     * @param string $link
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+    public function actionUpdate($link)
     {
-        $model = $this->findModel($id);
+        $model = $this->findModelByLink($link);
 
-        if ($model->load(Yii::$app->request->post()) && $model->fillLink() && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->processLink($link, $model->link, $model->group_id) && $model->save()) {
 	        return $this->redirect(['view', 'link' => $model->link]);
         }
 
@@ -185,6 +188,28 @@ class GroupController extends Controller
 			$member->newJoinRequest($model->group_id, $profileId);
 		}
 		return $this->redirect(['view', 'link' => $link]);
+    }
+
+	/**
+	 * @param string $link
+	 * @return mixed
+	 * @throws NotFoundHttpException
+	 * @throws ForbiddenHttpException
+	 */
+	public function actionPanel($link)
+	{
+		$model = $this->findModelByLink($link);
+		if (!($model->isModerator(Yii::$app->profile->getId())))
+		{
+			throw new ForbiddenHttpException('You are not allowed here');
+		}
+		$dataProvider = new ActiveDataProvider([
+			'query' => GroupMember::find()->joinRequest($model->group_id)
+		]);
+		return $this->render('panel', [
+			'model' => $model,
+			'dataProvider' => $dataProvider,
+		]);
     }
 
     /**

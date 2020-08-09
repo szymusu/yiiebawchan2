@@ -1,10 +1,12 @@
 <?php
 
+use yii\data\ActiveDataProvider;
 use yii\helpers\Html;
+use yii\widgets\ListView;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Group */
-/* @var $profile \common\components\Profile */
+/* @var $dataProvider ActiveDataProvider */
 
 if (empty($profile)) $profileId = Yii::$app->profile->getId();
 else $profileId = $profile->getId();
@@ -40,5 +42,13 @@ $this->params['breadcrumbs'][] = $this->title;
         }
         ?>
     </p>
+
+    <?= ListView::widget([
+        'dataProvider' => $dataProvider,
+        'itemOptions' => ['tag' => false],
+        'layout' => '<div class="container mt-5">{items}</div>{pager}',
+        'itemView' => '@frontend/views/profile/_post_item_small',
+    ])
+    ?>
 
 </div>
