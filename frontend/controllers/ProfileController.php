@@ -107,7 +107,7 @@ class ProfileController extends Controller
         $model = $this->findModelByLink($link);
         if (!($model->isMine())) $this->goBack();
 
-        if ($model->load(Yii::$app->request->post()) && $model->processLink($link, $model->link, $model->profile_id) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->linkChange($link) && $model->save()) {
 	        return $this->redirect(['view', 'link' => $model->link]);
         }
 

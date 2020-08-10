@@ -185,6 +185,15 @@ class Profile extends ActiveRecord
         $this->save(true, ['last_login']);
     }
 
+	/**
+	 * @param string $previousLink
+	 * @return bool
+	 */
+	public function linkChange($previousLink)
+	{
+		return $this->processLink($previousLink, $this->link, $this->profile_id);
+	}
+
 	public function setLinkAndId($newLink, $randomId)
 	{
 		$this->link = $newLink;

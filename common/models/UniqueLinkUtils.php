@@ -54,7 +54,7 @@ trait UniqueLinkUtils
 	 * @param string $randomId
 	 * @return bool
 	 */
-	public function processLink($previousLink, $newLink, $randomId)
+	private function processLink($previousLink, $newLink, $randomId)
 	{
 		$result = $this->_processLink($previousLink, $newLink, $randomId);
 		$this->setLinkAndId($result['newLink'], $result['randomId']);
@@ -66,4 +66,10 @@ trait UniqueLinkUtils
 	 * @param string $randomId
 	 */
 	public abstract function setLinkAndId($newLink, $randomId);
+
+	/**
+	 * @param string $previousLink
+	 * @return bool
+	 */
+	public abstract function linkChange($previousLink);
 }

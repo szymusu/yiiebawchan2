@@ -125,7 +125,7 @@ class GroupController extends Controller
     {
         $model = $this->findModelByLink($link);
 
-        if ($model->load(Yii::$app->request->post()) && $model->processLink($link, $model->link, $model->group_id) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->linkChange($link) && $model->save()) {
 	        return $this->redirect(['view', 'link' => $model->link]);
         }
 

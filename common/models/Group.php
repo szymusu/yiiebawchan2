@@ -123,6 +123,15 @@ class Group extends ActiveRecord
 	}
 
 	/**
+	 * @param string $previousLink
+	 * @return bool
+	 */
+	public function linkChange($previousLink)
+	{
+		return $this->processLink($previousLink, $this->link, $this->group_id);
+	}
+
+	/**
 	 * @param string $link
 	 * @return Group|null
 	 */
