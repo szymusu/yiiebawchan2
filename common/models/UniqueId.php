@@ -74,7 +74,7 @@ class UniqueId extends ActiveRecord
 	 * @return UniqueId
 	 * @throws Exception
 	 */
-	public function random()
+	public function randomize()
 	{
 		do
 		{
@@ -93,7 +93,7 @@ class UniqueId extends ActiveRecord
 	public static function newRandom($link = null)
 	{
 		$uid = new static();
-		$uid->random();
+		$uid->randomize();
 
 		if ($link == null)
 		{

@@ -40,4 +40,22 @@ trait TypeArrayUtils
 	{
 		return array_keys(static::$TYPE);
 	}
+
+	/**
+	 * @param string $typeName
+	 * @return bool
+	 */
+	public static function typeNameExists($typeName)
+	{
+		return array_key_exists($typeName, static::$TYPE);
+	}
+
+	/**
+	 * @param int $typeNumber
+	 * @return bool
+	 */
+	public static function typeNumberExists($typeNumber)
+	{
+		return in_array($typeNumber, static::$TYPE);
+	}
 }

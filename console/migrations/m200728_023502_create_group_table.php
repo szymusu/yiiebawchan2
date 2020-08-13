@@ -14,7 +14,7 @@ class m200728_023502_create_group_table extends Migration
     {
         $this->createTable('{{%group}}', [
             'group_id' => $this->string(16)->notNull(),
-            'link' => $this->string(16)->unique(),
+            'link' => $this->string(32)->unique(),
 	        'name' => $this->string(64)->notNull(),
 	        'description' => $this->text(),
 	        'type' => $this->integer(11),

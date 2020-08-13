@@ -2,7 +2,9 @@
 
 namespace frontend\controllers;
 
+use common\exceptions\FileUploadException;
 use common\models\Comment;
+use common\models\File;
 use common\models\Group;
 use common\models\Reaction;
 use Yii;
@@ -15,6 +17,7 @@ use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
+use yii\web\UploadedFile;
 
 /**
  * PostController implements the CRUD actions for Post model.
@@ -97,7 +100,8 @@ class PostController extends Controller
 
         $model = new Post();
 
-        if ($model->load(Yii::$app->request->post()) && $model->saveNew(Yii::$app->profile->get(), $groupModel)) {
+        if ($model->load(Yii::$app->request->post()) && $model->saveNew(Yii::$app->profile->get(), $groupModel))
+        {
             return $this->redirect(['view', 'id' => $model->post_id]);
         }
 
@@ -106,19 +110,43 @@ class PostController extends Controller
         ]);
     }
 
-    /**
-     * Updates an existing Post model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
+	/**
+	 * Updates an existing Post model.
+	 * If update is successful, the browser will be redirected to the 'view' page.
+	 * @param string $id
+	 * @return mixed
+	 * @throws NotFoundHttpException if the model cannot be found
+	 * @throws Exception
+	 */
     public function actionEdit($id)
     {
 	    $model = $this->findModel($id);
-        if (!($model->isMine())) $this->goBack();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+	    $file = UploadedFile::getInstanceByName('upload');
+	    if ($file)
+	    {
+	    	$fileModel = new File();
+	    	$fileModel->source_id = $model->post_id;
+		    try
+		    {
+			    $fileModel->upload($file);
+		    }
+		    catch (FileUploadException $e)
+		    {
+			    Yii::$app->session->setFlash('fileUploadError', $e->getMessage());
+			    return $this->render('update', [
+				    'model' => $model,
+			    ]);
+		    }
+	    }
+
+        if (!($model->isMine()))
+        {
+	        return $this->goBack();
+        }
+
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+        {
             return $this->redirect(['view', 'id' => $model->post_id]);
         }
 
@@ -215,7 +243,7 @@ class PostController extends Controller
 		}
 		else
 		{
-			return 'ERROE' . print_r($comment->errors);
+			return 'ERROR' . print_r($comment->errors);
 		}
     }
 

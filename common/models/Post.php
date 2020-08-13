@@ -137,7 +137,6 @@ class Post extends ActiveRecord
 	 * @param $profile Profile
 	 * @param $group Group
 	 * @return bool
-	 * @throws Exception
 	 */
     public function saveNew($profile, $group)
     {

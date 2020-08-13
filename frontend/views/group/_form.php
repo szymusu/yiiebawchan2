@@ -1,5 +1,6 @@
 <?php
 
+use yii\bootstrap4\Alert;
 use yii\helpers\Html;
 use yii\bootstrap4\ActiveForm;
 
@@ -7,7 +8,15 @@ use yii\bootstrap4\ActiveForm;
 /* @var $model common\models\Group */
 /* @var $form yii\bootstrap4\ActiveForm */
 ?>
-
+<?php
+if (Yii::$app->session->hasFlash('linkExists'))
+{
+	echo Alert::widget([
+		'options' => ['class' => 'alert-danger'],
+		'body' => Yii::$app->session->getFlash('linkExists'),
+	]);
+}
+?>
 <div class="group-form">
 
     <?php $form = ActiveForm::begin(); ?>

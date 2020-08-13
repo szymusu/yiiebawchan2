@@ -8,7 +8,6 @@ use common\models\Profile;
 use Error;
 use Yii;
 use common\models\Group;
-use yii\base\Exception;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -99,7 +98,6 @@ class GroupController extends Controller
      * Creates a new Group model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
-     * @throws Exception
      */
     public function actionCreate()
     {
