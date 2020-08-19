@@ -142,6 +142,15 @@ class Group extends ActiveRecord
 	}
 
 	/**
+	 * @param string $id
+	 * @return Group|null
+	 */
+	public static function findById($id)
+	{
+		return Group::findOne(['group_id' => $id]);
+	}
+
+	/**
 	 * @param string $profileId
 	 * @return bool
 	 */

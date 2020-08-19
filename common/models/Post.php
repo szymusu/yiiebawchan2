@@ -108,6 +108,22 @@ class Post extends ActiveRecord
 		return $this->hasOne(Group::class, ['group_id' => 'group_id']);
 	}
 
+	/**
+	 * @return string
+	 */
+	public function groupName()
+	{
+		return $this->getGroup()->one()->name;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function groupLink()
+	{
+		return $this->getGroup()->one()->link;
+	}
+
     /**
      * @return bool
      */

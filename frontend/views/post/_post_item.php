@@ -7,6 +7,7 @@
  */
 
 use common\models\Comment;
+use common\models\File;
 use common\models\Post;
 use common\models\query\CommentQuery;
 use yii\data\ActiveDataProvider;
@@ -17,12 +18,15 @@ use yii\widgets\Pjax;
 
 if (empty($isPostPage)) $isPostPage = false;
 
+$file = File::findOnSource($model->post_id);
+
 ?>
 
 <div class="container mb-5 mt-4 border border-dark p-4 rounded post-item">
     <div class="mb-3 row">
         <div class="col">
-            <strong><?= Html::a($model->profile->name, '/profile/view/' . $model->profile->link) ?></strong><br/>
+            <strong><?= Html::a($model->profile->name, '/profile/view/' . $model->profile->link) ?>  ->  </strong>
+            <strong><?= Html::a($model->groupName(), '/group/view/' . $model->groupLink()) ?></strong><br/>
             <span class="text-muted">
             <?= Yii::$app->formatter->asRelativeTime($model->created_at) . ' • '
             . Yii::$app->formatter->asDate($model->created_at, 'medium') . ', '
@@ -58,6 +62,14 @@ if (empty($isPostPage)) $isPostPage = false;
         </div>
     </div>
     <div><?= Yii::$app->formatter->asParagraphs($model->content) ?></div>
+    <div class="container" style="max-width: 100%">
+        <?php
+        if (!empty($file))
+        {
+            echo $this->render('_' . $file->typeName(), ['file' => $file, ]);
+        }
+        ?>
+    </div>
     <div class="mt-3">
 	    <?php Pjax::begin(['scrollTo' => false]) ?>
         <?= $this->render('_reaction_bar', ['model' => $model]); ?>

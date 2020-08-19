@@ -102,6 +102,18 @@ class PostController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->saveNew(Yii::$app->profile->get(), $groupModel))
         {
+	        try
+	        {
+		        $this->uploadFile(UploadedFile::getInstanceByName('upload'), $model);
+	        }
+	        catch (FileUploadException $e)
+	        {
+		        Yii::$app->session->setFlash('fileUploadError', $e->getMessage());
+		        return $this->render('update', [
+			        'model' => $model,
+		        ]);
+	        }
+
             return $this->redirect(['view', 'id' => $model->post_id]);
         }
 
@@ -115,35 +127,28 @@ class PostController extends Controller
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param string $id
 	 * @return mixed
-	 * @throws NotFoundHttpException if the model cannot be found
 	 * @throws Exception
+	 * @throws NotFoundHttpException if the model cannot be found
 	 */
     public function actionEdit($id)
     {
 	    $model = $this->findModel($id);
-
-	    $file = UploadedFile::getInstanceByName('upload');
-	    if ($file)
-	    {
-	    	$fileModel = new File();
-	    	$fileModel->source_id = $model->post_id;
-		    try
-		    {
-			    $fileModel->upload($file);
-		    }
-		    catch (FileUploadException $e)
-		    {
-			    Yii::$app->session->setFlash('fileUploadError', $e->getMessage());
-			    return $this->render('update', [
-				    'model' => $model,
-			    ]);
-		    }
-	    }
-
-        if (!($model->isMine()))
+        if (!($model->isMine()) || !(Group::findById($model->group_id)->isAllowedToPost(Yii::$app->profile->getId())))
         {
 	        return $this->goBack();
         }
+
+	    try
+	    {
+		    $this->uploadFile(UploadedFile::getInstanceByName('upload'), $model);
+	    }
+	    catch (FileUploadException $e)
+	    {
+		    Yii::$app->session->setFlash('fileUploadError', $e->getMessage());
+		    return $this->render('update', [
+			    'model' => $model,
+		    ]);
+	    }
 
         if ($model->load(Yii::$app->request->post()) && $model->save())
         {
@@ -261,5 +266,21 @@ class PostController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+	/**
+	 * @param UploadedFile $file
+	 * @param Post $model
+	 * @throws Exception
+	 * @throws FileUploadException
+	 */
+	private function uploadFile($file, $model)
+	{
+		if ($file)
+		{
+			$fileModel = new File();
+			$fileModel->source_id = $model->post_id;
+			$fileModel->upload($file);
+		}
     }
 }

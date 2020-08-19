@@ -1,12 +1,13 @@
 <?php
 
+use common\models\Group;
 use yii\helpers\Html;
 use yii\widgets\ListView;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-/* @var $model \common\models\Group */
+/* @var $model Group */
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = $this->title;

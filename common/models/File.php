@@ -94,13 +94,23 @@ class File extends ActiveRecord
 
 	/**
 	 * @param string $md5
-	 * @param string $typeNumber
+	 * @param int $typeNumber
 	 * @return File
 	 */
 	public static function findFile($md5, $typeNumber)
 	{
 		return static::find()->andWhere(['md5' => $md5, 'type' => $typeNumber])->one();
 	}
+
+	/**
+	 * @param string $sourceId
+	 * @return File
+	 */
+	public static function findOnSource($sourceId)
+	{
+		return static::find()->andWhere(['source_id' => $sourceId])->one();
+	}
+
 
 	/**
 	 * @param string $alias
@@ -121,9 +131,19 @@ class File extends ActiveRecord
 	 * @return string
 	 * @throws Exception
 	 */
+	public function typeName()
+	{
+		return static::getTypeName($this->type);
+	}
+
+
+	/**
+	 * @return string
+	 * @throws Exception
+	 */
 	public function getDirPath()
 	{
-		return static::getAlias(sprintf('@frontend/web/storage/%s/', static::getTypeName($this->type)));
+		return static::getAlias(sprintf('@frontend/web/storage/%s/', $this->typeName()));
 	}
 
 	/**
@@ -134,7 +154,7 @@ class File extends ActiveRecord
 	public function getTempRandomPath()
 	{
 		return static::getAlias(sprintf('@frontend/web/storage/%s/%s.%s',
-			static::getTypeName($this->type),
+			$this->typeName(),
 			Yii::$app->security->generateRandomString(8),
 			$this->extension));
 	}
@@ -153,7 +173,7 @@ class File extends ActiveRecord
 	 */
 	public function getFilePath()
 	{
-		return static::getAlias(sprintf("@frontend/web/storage/%s/%s", static::getTypeName($this->type), $this->getFileName()));
+		return static::getAlias(sprintf("@frontend/web/storage/%s/%s", $this->typeName(), $this->getFileName()));
 	}
 
 	/**
@@ -163,6 +183,15 @@ class File extends ActiveRecord
 	public function getFileDir()
 	{
 		return dirname($this->getFilePath());
+	}
+
+	/**
+	 * @return string
+	 * @throws Exception
+	 */
+	public function getLink()
+	{
+		return sprintf("%s/storage/%s/%s", Yii::$app->params['frontendUrl'], $this->typeName(), $this->getFileName());
 	}
 
 	/**
@@ -183,7 +212,7 @@ class File extends ActiveRecord
 		$repeated = static::findFile(md5_file($file->tempName), $this->type);
 		if ($repeated != null)
 		{
-			$this->repeated($repeated);
+			return $this->repeated($repeated);
 		}
 
 
