@@ -26,10 +26,11 @@ class Reaction extends ActiveRecord
 	 * @var array<string, int>
 	 */
 	public static $TYPE = [
-		'YES' => 1,
-		'NOOO' => 2,
-		'XDD' => 3,
-		'WTF¿?' => 4,
+		'fas fa-thumbs-up' => 1,
+		'fas fa-thumbs-down' => 2,
+		'fas fa-laugh-squint' => 3,
+		'fas fa-heart' => 4,
+		'fas fa-question-circle' => 5,
 	];
 
 	/**

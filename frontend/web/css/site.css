@@ -118,3 +118,23 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+
+.reaction-icon {
+    font-size: 25px;
+}
+
+.fa-thumbs-up.colored {
+    color: #1e7e34;
+}
+.fa-thumbs-down.colored {
+    color: #6610f2;
+}
+.fa-laugh-squint.colored {
+    color: #ba8b00;
+}
+.fa-question-circle.colored {
+    color: #b3d529;
+}
+.fa-heart.colored {
+    color: #a71d2a;
+}

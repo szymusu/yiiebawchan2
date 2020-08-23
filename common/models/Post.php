@@ -129,7 +129,7 @@ class Post extends ActiveRecord
      */
     public function isMine()
     {
-        return ($this->user_id === Yii::$app->user->id);
+        return ($this->profile_id === Yii::$app->profile->getId());
     }
 
     /**
@@ -174,12 +174,17 @@ class Post extends ActiveRecord
         return $this->save();
     }
 
-    /**
-     * @return int
-     */
-    public function getReactionCount()
+	/**
+	 * @param string $typeName
+	 * @return int
+	 */
+    public function getReactionCount($typeName = null)
     {
-        return Reaction::find()->post($this->post_id)->count();
+    	if ($typeName === null)
+	    {
+            return Reaction::find()->post($this->post_id)->count();
+	    }
+        return Reaction::find()->andWhere(['type' => Reaction::getTypeNumber($typeName)])->post($this->post_id)->count();
     }
 
 	/**
@@ -188,6 +193,7 @@ class Post extends ActiveRecord
 	 */
 	public function getReactionsFromProfile($profileId)
 	{
+		if (empty($profileId)) return [];
 		$reactions = [];
 		foreach (Reaction::getAllTypeNames() as $typeName)
 		{

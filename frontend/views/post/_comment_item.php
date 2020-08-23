@@ -2,6 +2,7 @@
 /**
  * @var $model Comment
  * @var $this \yii\web\View
+ * @var $canIAccess bool
  */
 
 use common\models\Comment;
@@ -23,12 +24,17 @@ use yii\widgets\Pjax;
 		</span>
 	</div>
     <?= Yii::$app->formatter->asParagraphs($model->content) ?>
-    <?php Pjax::begin() ?>
-    <?= Html::a('Reply', ['get-reply-form', 'id' => $model->original_comment_id], [
-        'class' => 'btn btn-primary',
-        'data' => ['method' => 'get', 'pjax' => '1'],
-    ]); ?>
-    <?php Pjax::end() ?>
+	<?php
+	if ($canIAccess)
+	{
+		Pjax::begin(['scrollTo' => false]);
+		echo Html::a('Reply', ['/post/get-reply-form', 'id' => $model->original_comment_id], [
+			'class' => 'btn btn-primary',
+			'data' => ['method' => 'get', 'pjax' => '1'],
+		]);
+		Pjax::end();
+	}
+	?>
 </div>
 <div class="ml-3">
     <?php
@@ -44,6 +50,9 @@ use yii\widgets\Pjax;
             'layout' => '<div class="container comment-container">{items}</div>',
             'itemView' => '_comment_item',
             'emptyText' => false,
+	        'viewParams' => [
+		        'canIAccess' => $canIAccess,
+	        ],
         ]);
         Pjax::end();
     }

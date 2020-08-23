@@ -1,17 +1,39 @@
 <?php
 /**
- * @var $model \common\models\Post
- * @var $this \yii\web\View
+ * @var $model Post
+ * @var $this View
  * @var $reactions array<string, bool>
+ * @var $access bool
  */
 
-$reactions = $model->getMyReactions();
-$postId = $model->post_id;
-?>
+use common\models\Post;
+use common\models\Reaction;
+use yii\web\View;
 
-<div><?= $model->getReactionCount() ?> total reactions</div>
+$canIAccess = $model->canIAccess();
 
-<?php foreach ($reactions as $name => $state)
+if ($canIAccess)
 {
-    echo $this->render('_reaction_btn', ['reactionName' => $name, 'reactionState' => $state, 'postId' => $postId]);
-}?>
+	$reactions = $model->getMyReactions();
+	$postId = $model->post_id;
+}
+else
+{
+	$reactions = Reaction::$TYPE;
+}
+
+foreach ($reactions as $name => $state)
+{
+	if ($canIAccess)
+	{
+		echo $this->render('_reaction_btn', [
+			'reactionName' => $name, 'reactionState' => $state, 'postId' => $postId, 'count' => $model->getReactionCount($name)
+		]);
+	}
+	else
+	{
+		echo $this->render('_reaction_show', [
+			'reactionName' => $name, 'count' => $model->getReactionCount($name)
+		]);
+	}
+}

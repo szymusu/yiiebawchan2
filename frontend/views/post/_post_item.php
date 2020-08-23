@@ -19,7 +19,7 @@ use yii\widgets\Pjax;
 if (empty($isPostPage)) $isPostPage = false;
 
 $file = File::findOnSource($model->post_id);
-
+$canIAccess = $model->canIAccess();
 ?>
 
 <div class="container mb-5 mt-4 border border-dark p-4 rounded post-item">
@@ -71,17 +71,24 @@ $file = File::findOnSource($model->post_id);
         ?>
     </div>
     <div class="mt-3">
-	    <?php Pjax::begin(['scrollTo' => false]) ?>
-        <?= $this->render('_reaction_bar', ['model' => $model]); ?>
-	    <?php Pjax::end() ?>
+        <?php
+        Pjax::begin(['scrollTo' => false]);
+        echo $this->render('_reaction_bar', ['model' => $model, 'access' => $canIAccess]);
+        Pjax::end();
+        ?>
     </div>
 
     <div class="mb-5 mt-5 p-0 pb-1 border border-dark rounded"></div>
 
     <div class="container">
-        <?php Pjax::begin() ?>
-        <?= $this->render('_comment_form', ['model' => $model]) ?>
-        <?php Pjax::end() ?>
+	    <?php
+	    if ($canIAccess)
+	    {
+		    Pjax::begin(['scrollTo' => false]);
+		    echo $this->render('_comment_form', ['model' => $model]);
+		    Pjax::end();
+	    }
+	    ?>
     </div>
     <div class="container">
 	    <?php Pjax::begin(); ?>
@@ -105,6 +112,7 @@ $file = File::findOnSource($model->post_id);
 		    'emptyText' => false,
 		    'viewParams' => [
 			    'isPostPage' => $isPostPage,
+			    'canIAccess' => $canIAccess,
 		    ],
 	    ]) ?>
 
