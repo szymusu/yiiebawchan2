@@ -50,6 +50,7 @@ return [
                 '/group/view/<link>' => '/group/view',
 	            '/group/join/<link>' => '/group/join',
 	            '/group/panel/<link>' => '/group/panel',
+	            '/group/accept-member/<link>' => '/group/accept-member',
 	            '/group/update/<link>' => '/group/update',
             ],
         ],

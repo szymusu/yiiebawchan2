@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\models\GroupMember;
+use common\models\MemberAcceptForm;
 use common\models\Post;
 use common\models\Profile;
 use Error;
@@ -138,11 +139,17 @@ class GroupController extends Controller
 	 * @param string $id
 	 * @return mixed
 	 * @throws NotFoundHttpException if the model cannot be found
+	 * @throws ForbiddenHttpException
 	 */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+    	$model = $this->findModel($id);
+	    if (!($model->isOwner(Yii::$app->profile->getId())))
+	    {
+		    throw new ForbiddenHttpException('You are not allowed here');
+	    }
 
+	    $model->delete();
         return $this->redirect(['index']);
     }
 
@@ -201,6 +208,7 @@ class GroupController extends Controller
 		{
 			throw new ForbiddenHttpException('You are not allowed here');
 		}
+
 		$dataProvider = new ActiveDataProvider([
 			'query' => GroupMember::find()->joinRequest($model->group_id)
 		]);
@@ -208,6 +216,39 @@ class GroupController extends Controller
 			'model' => $model,
 			'dataProvider' => $dataProvider,
 		]);
+    }
+
+	/**
+	 * @param string $link
+	 * @return mixed
+	 * @throws NotFoundHttpException
+	 * @throws ForbiddenHttpException
+	 */
+	public function actionAcceptMember($link)
+	{
+		$model = $this->findModelByLink($link);
+		if (!($model->isModerator(Yii::$app->profile->getId())))
+		{
+			throw new ForbiddenHttpException('You are not allowed here');
+		}
+
+		$formModel = new MemberAcceptForm();
+		if ($formModel->load(Yii::$app->request->post()))
+		{
+			if ($memberModel = GroupMember::findJoinRequest($model->group_id, $formModel->profile_id))
+			{
+				if ($formModel->type)
+				{
+					$memberModel->type = GroupMember::getTypeNumber('member');
+					$memberModel->save();
+				}
+				else
+				{
+					$memberModel->delete();
+				}
+			}
+		}
+		return $this->redirect(['/group/panel', 'link' => $link]);
     }
 
     /**

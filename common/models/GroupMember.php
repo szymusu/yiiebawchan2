@@ -3,7 +3,11 @@
 namespace common\models;
 
 use common\models\query\GroupMemberQuery;
+use common\models\query\GroupQuery;
+use common\models\query\ProfileQuery;
+use Exception;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -86,7 +90,7 @@ class GroupMember extends ActiveRecord
     /**
      * Gets query for [[Group]].
      *
-     * @return \yii\db\ActiveQuery|\common\models\query\GroupQuery
+     * @return ActiveQuery|GroupQuery
      */
     public function getGroup()
     {
@@ -96,7 +100,7 @@ class GroupMember extends ActiveRecord
     /**
      * Gets query for [[Profile]].
      *
-     * @return \yii\db\ActiveQuery|\common\models\query\ProfileQuery
+     * @return ActiveQuery|ProfileQuery
      */
     public function getProfile()
     {
@@ -113,6 +117,15 @@ class GroupMember extends ActiveRecord
     }
 
 	/**
+	 * @param string $profileId
+	 * @return GroupMember
+	 */
+	public static function findByProfile($profileId)
+	{
+		return static::find()->andWhere(['profile_id' => $profileId])->one();
+    }
+
+	/**
 	 * @param string $groupId
 	 * @param string $profileId
 	 * @return bool
@@ -121,6 +134,31 @@ class GroupMember extends ActiveRecord
 	{
 		return GroupMember::find()->joinRequest($groupId, $profileId)->exists();
     }
+
+	/**
+	 * @param string $groupId
+	 * @param string $profileId
+	 * @return GroupMember
+	 */
+	public static function findJoinRequest($groupId, $profileId)
+	{
+		return GroupMember::find()->joinRequest($groupId, $profileId)->one();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function typeName()
+	{
+		try
+		{
+			return static::getTypeName($this->type);
+		}
+		catch (Exception $e)
+		{
+			return '';
+		}
+	}
 
 	/**
 	 * @param string $groupId

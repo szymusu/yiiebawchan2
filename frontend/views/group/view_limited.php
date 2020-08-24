@@ -47,7 +47,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'itemOptions' => ['tag' => false],
         'layout' => '<div class="container mt-5">{items}</div>{pager}',
-        'itemView' => '@frontend/views/profile/_post_item_small',
+        'itemView' => '@frontend/views/profile/_profile_item_small',
+        'viewParams' => [
+            'groupLink' => $model->link,
+        ]
     ])
     ?>
 

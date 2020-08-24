@@ -137,14 +137,19 @@ class ProfileController extends Controller
 
 	/**
 	 * @param string $link
+	 * @param string $group
 	 * @return mixed
-	 * @throws NotFoundHttpException
 	 * @throws ForbiddenHttpException
+	 * @throws NotFoundHttpException
 	 */
-    public function actionSwitch($link)
+    public function actionSwitch($link, $group = null)
     {
         Yii::$app->profile->switchTo($this->findModelByLink($link));
-        return $this->goBack(); //TODO WTF
+        if ($group === null)
+        {
+	        return $this->goBack();
+        }
+        return $this->redirect(["/group/view/$group"]);
     }
 
     /**

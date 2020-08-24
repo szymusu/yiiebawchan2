@@ -1,8 +1,10 @@
 <?php
 /**
- * @var $model \common\models\Profile
+ * @var $model Profile
+ * @var $groupLink string
  */
 
+use common\models\Profile;
 use yii\helpers\Html;
 
 ?>
@@ -13,7 +15,7 @@ use yii\helpers\Html;
 	</div>
 	<div class="col">
 		<p class="text-muted card-text"><?= '/' . $model->link ?></p>
-		<?= Html::a('Use this profile', ['/profile/switch', 'link' => $model->link], [
+		<?= Html::a('Use this profile', ['/profile/switch', 'link' => $model->link, 'group' => $groupLink], [
 			'class' => 'btn btn-primary',
 			'data' => [
 				'method' => 'post',

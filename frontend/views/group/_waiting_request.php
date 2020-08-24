@@ -1,11 +1,15 @@
 <?php
 /**
- * @var $model \common\models\GroupMember
+ * @var $model GroupMember
  */
 
-use yii\helpers\Html;
+use common\models\GroupMember;
+use common\models\MemberAcceptForm;
+use yii\bootstrap4\ActiveForm;
+use yii\bootstrap4\Html;
 
 $profile = $model->profile;
+$formModel = new MemberAcceptForm();
 
 ?>
 <div class="row d-flex">
@@ -16,19 +20,37 @@ $profile = $model->profile;
 		<h5><?= $profile->name ?></h5>
     </div>
 	<div class="col">
-		<?= Html::a('Accept', ['#'], [
-			'class' => 'btn btn-success',
-			'data' => [
-				'method' => 'post',
-			],
+		<?php $form = ActiveForm::begin([
+			'id' => 'member-accept-form',
+			'action' => ['/group/accept-member', 'link' => $model->group->link]
 		]) ?>
+
+		<?= $form->field($formModel, 'profile_id', ['template' => "{input}"])
+			->hiddenInput(['value' => $profile->profile_id]) ?>
+		<?= $form->field($formModel, 'type', ['template' => "{input}"])
+			->hiddenInput(['value' => true]) ?>
+
+		<?= Html::submitButton('Accept', [
+			'class' => 'btn btn-success',
+		]) ?>
+
+		<?php ActiveForm::end() ?>
 	</div>
 	<div class="col">
-		<?= Html::a('Reject', ['#'], [
-			'class' => 'btn btn-danger',
-			'data' => [
-				'method' => 'post',
-			],
+		<?php $form = ActiveForm::begin([
+			'id' => 'member-accept-form',
+			'action' => ['/group/accept-member', 'link' => $model->group->link]
 		]) ?>
+
+		<?= $form->field($formModel, 'profile_id', ['template' => "{input}"])
+			->hiddenInput(['value' => $profile->profile_id]) ?>
+		<?= $form->field($formModel, 'type', ['template' => "{input}"])
+			->hiddenInput(['value' => false]) ?>
+
+		<?= Html::submitButton('Reject', [
+			'class' => 'btn btn-danger',
+		]) ?>
+
+		<?php ActiveForm::end() ?>
 	</div>
 </div>
