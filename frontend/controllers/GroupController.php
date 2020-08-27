@@ -88,6 +88,7 @@ class GroupController extends Controller
 		    ]);
 	    }
 
+    	Yii::$app->user->setReturnUrl(Yii::$app->request->url);
 
         return $this->render($view, [
             'model' => $model,

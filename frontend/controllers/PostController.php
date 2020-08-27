@@ -63,6 +63,8 @@ class PostController extends Controller
 	                ->latest(),
         ]);
 
+	    Yii::$app->user->setReturnUrl(Yii::$app->request->url);
+
         return $this->render('index', [
             'dataProvider' => $dataProvider,
         ]);
@@ -77,7 +79,10 @@ class PostController extends Controller
     public function actionView($id)
     {
 	    $model = $this->findModel($id);
-        return $this->render('view', [
+
+	    Yii::$app->user->setReturnUrl(Yii::$app->request->url);
+
+	    return $this->render('view', [
             'model' => $model,
         ]);
     }

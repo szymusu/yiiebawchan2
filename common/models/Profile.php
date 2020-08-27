@@ -123,45 +123,6 @@ class Profile extends ActiveRecord
         return $this->save();
     }
 
-//    /**
-//     * @param string $previousLink
-//     * @return bool
-//     */
-//    public function processLink($previousLink)
-//    {
-//
-//        if ($this->link === $previousLink)
-//        {
-//            return true;
-//        }
-//        else
-//        {
-//            $duplicate = UniqueId::findOne($this->link);
-//        	if ($this->profile_id !== $previousLink && $duplicate == null)
-//	        {
-//        	    UniqueId::tryDelete($previousLink);
-//	        }
-//            if (!($this->link))
-//            {
-//                $this->link = $this->profile_id;
-//                return true;
-//            }
-//            if ($duplicate != null)
-//            {
-//            	if ($duplicate->id === $this->profile_id)
-//	            {
-//	            	return true;
-//	            }
-//	            Yii::$app->session->setFlash('linkExists', 'This link is already in use');
-//            	return false;
-//            }
-//
-//        	$uid = new UniqueId();
-//        	$uid->id = $this->link;
-//        	return $uid->save();
-//        }
-//    }
-
     /**
      * @param $user User
      * @return bool
@@ -198,6 +159,19 @@ class Profile extends ActiveRecord
 	{
 		$this->link = $newLink;
 		$this->profile_id = $randomId;
+	}
+
+	/**
+	 * @param Group $group
+	 * @return GroupMember
+	 */
+	public function getMemberOf($group)
+	{
+		if ($group == null)
+		{
+			return null;
+		}
+		return GroupMember::find()->member($group->group_id, $this->profile_id)->one();
 	}
 
 	/**

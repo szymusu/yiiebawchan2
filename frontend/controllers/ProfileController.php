@@ -149,7 +149,9 @@ class ProfileController extends Controller
         {
 	        return $this->goBack();
         }
-        return $this->redirect(['/group/view', 'link' => $group]);
+        return $this->redirect(Yii::$app->user->returnUrl);
+//        return $this->goBack();
+//        return $this->redirect(['/group/view', 'link' => $group]);
     }
 
     /**
