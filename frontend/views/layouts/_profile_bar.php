@@ -4,7 +4,7 @@ use yii\bootstrap4\Nav;
 
 ?>
 
-<aside class="shadow" style="right: 0; position: fixed">
+<aside class="shadow" style="right: 0; position: fixed; max-width: 19%">
 	<?php echo Nav::widget([
 		'options' => [
 			'class' => 'd-flex flex-column nav-pills'

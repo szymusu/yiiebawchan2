@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'itemOptions' => [
             'tag' => false
         ]
-    ]); ?>
+    ]) ?>
 
 
 </div>

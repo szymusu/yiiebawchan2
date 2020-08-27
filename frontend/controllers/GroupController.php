@@ -31,7 +31,6 @@ class GroupController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
 	                'delete' => ['POST'],
-//	                'join' => ['POST'],
                 ],
             ],
 	        'access' => [
@@ -42,7 +41,7 @@ class GroupController extends Controller
 				        'roles' => ['@'],
 			        ],
 		        ]
-	        ]
+	        ],
         ];
     }
 
@@ -82,7 +81,8 @@ class GroupController extends Controller
 		    $view = 'view_limited';
 		    $dataProvider = new ActiveDataProvider([
 			    'query' => Profile::find()
-				    ->leftJoin(GroupMember::tableName(), 'profile.profile_id = group_member.profile_id')
+				    ->innerJoin(GroupMember::tableName(), 'profile.profile_id = group_member.profile_id')
+				    ->andWhere(['group_member.group_id' => $model->group_id])
 		            ->andWhere('group_member.type >= 1')
 			        ->onlyMine()
 		    ]);
@@ -104,7 +104,9 @@ class GroupController extends Controller
     {
         $model = new Group();
 
-        if ($model->load(Yii::$app->request->post()) && $model->saveNew()) {
+        if ($model->load(Yii::$app->request->post()) && $model->saveNew(Yii::$app->profile->get())) {
+
+
             return $this->redirect(['view', 'link' => $model->link]);
         }
 
@@ -113,16 +115,21 @@ class GroupController extends Controller
         ]);
     }
 
-    /**
-     * Updates an existing Group model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $link
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
+	/**
+	 * Updates an existing Group model.
+	 * If update is successful, the browser will be redirected to the 'view' page.
+	 * @param string $link
+	 * @return mixed
+	 * @throws NotFoundHttpException if the model cannot be found
+	 * @throws ForbiddenHttpException
+	 */
     public function actionUpdate($link)
     {
         $model = $this->findModelByLink($link);
+	    if (!($model->isAdmin(Yii::$app->profile->getId())))
+	    {
+		    throw new ForbiddenHttpException('You are not allowed here');
+	    }
 
         if ($model->load(Yii::$app->request->post()) && $model->linkChange($link) && $model->save()) {
 	        return $this->redirect(['view', 'link' => $model->link]);
@@ -194,6 +201,23 @@ class GroupController extends Controller
 		}
 		return $this->redirect(['view', 'link' => $link]);
     }
+
+	/**
+	 * @param string $link
+	 * @return mixed
+	 * @throws NotFoundHttpException
+	 */
+	public function actionLeave($link)
+	{
+        $model = $this->findModelByLink($link);
+        $memberModel = GroupMember::find()->member($model->group_id, Yii::$app->profile->getId())->one();
+        if ($memberModel && $memberModel->typeName() != 'banned')
+        {
+        	$memberModel->delete();
+        }
+        return $this->redirect(['/group/view', 'link' => $link]);
+    }
+
 
 	/**
 	 * @param string $link

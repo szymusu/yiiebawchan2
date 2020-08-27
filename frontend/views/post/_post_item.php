@@ -25,12 +25,12 @@ $canIAccess = $model->canIAccess();
 <div class="container mb-5 mt-4 border border-dark p-4 rounded post-item">
     <div class="mb-3 row">
         <div class="col">
-            <strong><?= Html::a($model->profile->name, '/profile/view/' . $model->profile->link) ?>  ->  </strong>
-            <strong><?= Html::a($model->groupName(), '/group/view/' . $model->groupLink()) ?></strong><br/>
+            <strong><?= Html::a($model->profile->name, sprintf("/profile/view/%s", $model->profile->link)) ?>  ->  </strong>
+            <strong><?= Html::a($model->groupName(), sprintf("/group/view/%s", $model->groupLink())) ?></strong><br/>
             <span class="text-muted">
-            <?= Yii::$app->formatter->asRelativeTime($model->created_at) . ' • '
-            . Yii::$app->formatter->asDate($model->created_at, 'medium') . ', '
-            . Yii::$app->formatter->asTime($model->created_at, 'short')
+            <?= sprintf("%s • %s, %s", Yii::$app->formatter->asRelativeTime($model->created_at),
+                Yii::$app->formatter->asDate($model->created_at, 'medium'),
+                Yii::$app->formatter->asTime($model->created_at, 'short'))
             ?>
             </span>
         </div>

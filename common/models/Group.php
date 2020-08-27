@@ -3,6 +3,7 @@
 namespace common\models;
 
 use common\models\query\GroupQuery;
+use Yii;
 use yii\base\Exception;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -94,9 +95,31 @@ class Group extends ActiveRecord
     }
 
 	/**
+	 * @return Group
+	 */
+	public static function getCurrent()
+	{
+		$controller = Yii::$app->controller;
+		if ($controller->id == 'group' && isset($controller->actionParams['link']))
+		{
+			return static::findByLink($controller->actionParams['link']);
+		}
+		if ($controller->id == 'post' && isset($controller->actionParams['id']))
+		{
+			$post = Post::findById($controller->actionParams['id']);
+			return static::findById($post->group_id);
+		}
+		else
+		{
+			return null;
+		}
+    }
+
+	/**
+	 * @param Profile $owner
 	 * @return bool
 	 */
-	public function saveNew()
+	public function saveNew($owner)
 	{
 		try
 		{
@@ -110,7 +133,19 @@ class Group extends ActiveRecord
 		$this->group_id = $uid->id;
 		$this->link = $uid->link;
 
-		return $this->save();
+		if ($this->save())
+		{
+			$ownerMember = new GroupMember();
+			$ownerMember->profile_id = $owner->profile_id;
+			$ownerMember->group_id = $this->group_id;
+			$ownerMember->type = GroupMember::getTypeNumber('owner');
+
+			return $ownerMember->save();
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -194,6 +229,23 @@ class Group extends ActiveRecord
 	public function isMember($profileId)
 	{
 		return GroupMember::find()->member($this->group_id, $profileId)->exists();
+	}
+
+	/**
+	 * @param string $profileId
+	 * @return GroupMember
+	 */
+	public function getMember($profileId)
+	{
+		return GroupMember::find()->member($this->group_id, $profileId)->one();
+	}
+
+	/**
+	 * @return GroupMember
+	 */
+	public function getMyMember()
+	{
+		return $this->getMember(Yii::$app->profile->getId());
 	}
 
 	/**

@@ -3,7 +3,6 @@
 use common\models\Group;
 use yii\helpers\Html;
 use yii\widgets\ListView;
-use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -16,11 +15,28 @@ $this->params['breadcrumbs'][] = $this->title;
 
 	<h1><?= Html::encode($this->title) ?></h1>
 
-	<p>
+	<div>
+        <div class="text-right mb-2">
+        <?= Html::a('Leave Group', ['leave', 'link' => $model->link], [
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => 'Are you sure you want to leave this group?',
+                'method' => 'post',
+            ],
+        ]) ?>
+        </div>
+        <div class="text-right">
+		<?php
+        if ($model->isModerator(Yii::$app->profile->getId()))
+        {
+            echo Html::a('Admin Panel', ['/group/panel', 'link' => $model->link], ['class' => 'btn btn-primary']);
+        }
+        ?>
+        </div>
+        <div>
 		<?= Html::a('Create Post', ['/post/create', 'group' => $model->link], ['class' => 'btn btn-success']) ?>
-	</p>
-
-	<?php Pjax::begin(); ?>
+        </div>
+	</div>
 
 	<?= ListView::widget([
 		'dataProvider' => $dataProvider,
@@ -28,7 +44,5 @@ $this->params['breadcrumbs'][] = $this->title;
 		'layout' => '<div class="container">{items}</div>{pager}',
 		'itemView' => '@frontend/views/post/_post_item',
 	]) ?>
-
-	<?php Pjax::end(); ?>
 
 </div>

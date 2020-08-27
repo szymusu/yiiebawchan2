@@ -3,7 +3,6 @@
 use common\models\Group;
 use yii\helpers\Html;
 use yii\widgets\ListView;
-use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -16,10 +15,17 @@ $this->title = $model->name;
 
 	<h1><?= Html::encode($this->title) ?></h1>
 
+    <div class="text-right">
+		<?php
+		if ($model->isAdmin(Yii::$app->profile->getId()))
+		{
+			echo Html::a('Edit group', ['/group/update', 'link' => $model->link], ['class' => 'btn btn-primary']);
+		}
+		?>
+    </div>
+
     <h2 class="mt-3">Waiting join requests</h2>
     <div>
-    <?php Pjax::begin(); ?>
-
     <?= ListView::widget([
         'dataProvider' => $dataProvider,
         'itemOptions' => ['tag' => false],
@@ -27,7 +33,5 @@ $this->title = $model->name;
         'itemView' => '_waiting_request',
         'emptyText' => 'No requests found',
     ]) ?>
-
-    <?php Pjax::end(); ?>
     </div>
 </div>

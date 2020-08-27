@@ -105,7 +105,7 @@ class ProfileController extends Controller
     public function actionUpdate($link)
     {
         $model = $this->findModelByLink($link);
-        if (!($model->isMine())) $this->goBack();
+        if (!($model->isMine())) return $this->goBack();
 
         if ($model->load(Yii::$app->request->post()) && $model->linkChange($link) && $model->save()) {
 	        return $this->redirect(['view', 'link' => $model->link]);
@@ -149,7 +149,7 @@ class ProfileController extends Controller
         {
 	        return $this->goBack();
         }
-        return $this->redirect(["/group/view/$group"]);
+        return $this->redirect(['/group/view', 'link' => $group]);
     }
 
     /**

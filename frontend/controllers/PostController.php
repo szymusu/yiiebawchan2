@@ -6,6 +6,7 @@ use common\exceptions\FileUploadException;
 use common\models\Comment;
 use common\models\File;
 use common\models\Group;
+use common\models\GroupMember;
 use common\models\Reaction;
 use Yii;
 use common\models\Post;
@@ -16,7 +17,6 @@ use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\web\Response;
 use yii\web\UploadedFile;
 
 /**
@@ -46,11 +46,6 @@ class PostController extends Controller
                     ],
                 ]
             ],
-	        [
-		        'class' => 'yii\filters\ContentNegotiator',
-		        'only' => ['comment'],
-		        'formats' => ['application/json' => Response::FORMAT_JSON]
-	        ]
         ];
     }
 
@@ -61,7 +56,11 @@ class PostController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Post::find()->latest(),
+            'query' => Post::find()
+	                ->innerJoin(GroupMember::tableName(), 'post.group_id = group_member.group_id')
+	                ->andWhere(['group_member.profile_id' => Yii::$app->profile->getId()])
+	                ->andWhere('group_member.type >= 1')
+	                ->latest(),
         ]);
 
         return $this->render('index', [

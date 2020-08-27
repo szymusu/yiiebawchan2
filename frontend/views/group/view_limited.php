@@ -46,8 +46,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= ListView::widget([
         'dataProvider' => $dataProvider,
         'itemOptions' => ['tag' => false],
-        'layout' => '<div class="container mt-5">{items}</div>{pager}',
+        'layout' => '<h5 class="mt-5">Your other profiles that are members of this group:</h5>
+                     <div class="container">{items}</div>{pager}',
         'itemView' => '@frontend/views/profile/_profile_item_small',
+        'emptyText' => false,
         'viewParams' => [
             'groupLink' => $model->link,
         ]

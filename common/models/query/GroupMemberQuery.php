@@ -46,7 +46,7 @@ class GroupMemberQuery extends ActiveQuery
 		}
 		if ($profileId !== null)
 		{
-			return $this->andWhere(['profile_id' => $profileId]);
+			$this->andWhere(['profile_id' => $profileId]);
 		}
 		return $this->andWhere(['group_id' => $groupId]);
     }

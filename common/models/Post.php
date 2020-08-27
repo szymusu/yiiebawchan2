@@ -141,6 +141,15 @@ class Post extends ActiveRecord
         return new PostQuery(get_called_class());
     }
 
+	/**
+	 * @param string $id
+	 * @return Post
+	 */
+	public static function findById($id)
+	{
+		return static::find()->andWhere(['post_id' => $id])->one();
+	}
+
     /**
      * @return bool
      */

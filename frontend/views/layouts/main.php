@@ -11,7 +11,7 @@ $this->beginContent('@frontend/views/layouts/base.php');
 		<?php echo $this->render('_group_bar') ?>
 		<?php echo $this->render('_profile_bar') ?>
 
-        <div class="content-wrapper p-3">
+        <div class="container">
 			<?= $content ?>
         </div>
     </main>

@@ -1,5 +1,6 @@
 <?php
 
+use common\models\Group;
 use yii\bootstrap4\Alert;
 use yii\helpers\Html;
 use yii\bootstrap4\ActiveForm;
@@ -27,7 +28,7 @@ if (Yii::$app->session->hasFlash('linkExists'))
 
     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'type')->textInput() ?>
+    <?= $form->field($model, 'type')->dropdownList(array_flip(Group::$TYPE)) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
