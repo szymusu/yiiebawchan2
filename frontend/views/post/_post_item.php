@@ -49,8 +49,8 @@ $canIAccess = $model->canIAccess();
             }
             if ($model->isMine())
             {
-                echo Html::a('Edit', ['edit', 'id' => $model->post_id], [ 'class' => 'btn btn-primary ml-1', ]);
-                echo Html::a('Delete', ['delete', 'id' => $model->post_id], [
+                echo Html::a('Edit', ['/post/edit', 'id' => $model->post_id], [ 'class' => 'btn btn-primary ml-1', ]);
+                echo Html::a('Delete', ['/post/delete', 'id' => $model->post_id], [
                     'class' => 'ml-2 btn btn-danger',
                     'data' => [
                         'confirm' => 'Are you sure you want to delete this post?',
@@ -72,7 +72,7 @@ $canIAccess = $model->canIAccess();
     </div>
     <div class="mt-3">
         <?php
-        Pjax::begin(['scrollTo' => false]);
+        Pjax::begin();
         echo $this->render('_reaction_bar', ['model' => $model, 'access' => $canIAccess]);
         Pjax::end();
         ?>

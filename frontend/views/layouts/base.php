@@ -12,6 +12,7 @@ use yii\web\View;
 AppAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
+<?php //$this->registerJs('$.pjax.defaults.scrollTo = false;', View::POS_LOAD); ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
 <head>

@@ -14,5 +14,9 @@ echo Html::a(sprintf('<i class="%s reaction-icon %s">
 				  </i>', $reactionName, ($reactionState ? 'colored' : ''), $count),
 	['/post/react', 'id' => $postId, 'type' => Reaction::getTypeNumber($reactionName)], [
 		'class' => 'btn mr-2 btn-outline-secondary',
-		'data' => ['method' => 'post', 'pjax' => '1'],
+		'data' => [
+		    'method' => 'post',
+            'pjax' => '1',
+            'pjax-scrollto' => true, //this actually means don't scroll, but for some reason if set to false it scrolls, but true doesn't
+        ],
 ]);
