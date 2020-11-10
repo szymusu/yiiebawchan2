@@ -83,28 +83,17 @@ class Profile extends ActiveRecord
         return new ProfileQuery(get_called_class());
     }
 
-	/**
-	 * @param string $link
-	 * @return Profile|null
-	 */
-	public static function findByLink($link)
-	{
+    public static function findByLink(string $link): Profile
+    {
 		return Profile::findOne(['link' => $link]);
     }
 
-	/**
-	 * @param string $id
-	 * @return Profile|null
-	 */
-	public static function findById($id)
-	{
+    public static function findById(string $id): Profile
+    {
 		return Profile::findOne(['profile_id' => $id]);
 	}
 
-	/**
-     * @return bool
-     */
-    public function saveNew()
+    public function saveNew(): bool
     {
         $this->user_id = Yii::$app->user->id;
 
@@ -123,19 +112,12 @@ class Profile extends ActiveRecord
         return $this->save();
     }
 
-    /**
-     * @param $user User
-     * @return bool
-     */
-    public function isOwnedBy($user)
+    public function isOwnedBy(User $user): bool
     {
         return ($this->user_id == $user->id);
     }
 
-    /**
-     * @return bool
-     */
-    public function isMine()
+    public function isMine(): bool
     {
         return $this->isOwnedBy(Yii::$app->user);
     }
@@ -146,27 +128,19 @@ class Profile extends ActiveRecord
         $this->save(true, ['last_login']);
     }
 
-	/**
-	 * @param string $previousLink
-	 * @return bool
-	 */
-	public function linkChange($previousLink)
-	{
+    public function linkChange(string $previousLink): bool
+    {
 		return $this->processLink($previousLink, $this->link, $this->profile_id);
 	}
 
-	public function setLinkAndId($newLink, $randomId)
+	public function setLinkAndId(string $newLink, string $randomId)
 	{
 		$this->link = $newLink;
 		$this->profile_id = $randomId;
 	}
 
-	/**
-	 * @param Group $group
-	 * @return GroupMember
-	 */
-	public function getMemberOf($group)
-	{
+	public function getMemberOf(?Group $group): ?GroupMember
+    {
 		if ($group == null)
 		{
 			return null;
@@ -174,11 +148,8 @@ class Profile extends ActiveRecord
 		return GroupMember::find()->member($group->group_id, $this->profile_id)->one();
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function delete()
-	{
+    public function delete(): bool
+    {
 		UniqueId::tryDelete($this->profile_id);
 		UniqueId::tryDelete($this->link);
 

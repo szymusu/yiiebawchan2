@@ -108,26 +108,17 @@ class Post extends ActiveRecord
 		return $this->hasOne(Group::class, ['group_id' => 'group_id']);
 	}
 
-	/**
-	 * @return string
-	 */
-	public function groupName()
-	{
+    public function groupName(): string
+    {
 		return $this->getGroup()->one()->name;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function groupLink()
-	{
+    public function groupLink(): string
+    {
 		return $this->getGroup()->one()->link;
 	}
 
-    /**
-     * @return bool
-     */
-    public function isMine()
+    public function isMine(): bool
     {
         return ($this->profile_id === Yii::$app->profile->getId());
     }
@@ -141,29 +132,17 @@ class Post extends ActiveRecord
         return new PostQuery(get_called_class());
     }
 
-	/**
-	 * @param string $id
-	 * @return Post
-	 */
-	public static function findById($id)
+    public static function findById(string $id) : Post
 	{
 		return static::find()->andWhere(['post_id' => $id])->one();
 	}
 
-    /**
-     * @return bool
-     */
-    public function canIAccess()
+    public function canIAccess() : bool
     {
         return $this->getGroup()->one()->isAllowedToPost(Yii::$app->profile->getId());
     }
 
-	/**
-	 * @param $profile Profile
-	 * @param $group Group
-	 * @return bool
-	 */
-    public function saveNew($profile, $group)
+    public function saveNew(Profile $profile, Group $group) : bool
     {
         $this->user_id = Yii::$app->user->id;
         $this->profile_id = $profile->profile_id;
@@ -183,11 +162,7 @@ class Post extends ActiveRecord
         return $this->save();
     }
 
-	/**
-	 * @param string $typeName
-	 * @return int
-	 */
-    public function getReactionCount($typeName = null)
+    public function getReactionCount(string $typeName = null) : int
     {
     	if ($typeName === null)
 	    {
@@ -196,12 +171,8 @@ class Post extends ActiveRecord
         return Reaction::find()->andWhere(['type' => Reaction::getTypeNumber($typeName)])->post($this->post_id)->count();
     }
 
-	/**
-	 * @param $profileId string
-	 * @return array
-	 */
-	public function getReactionsFromProfile($profileId)
-	{
+    public function getReactionsFromProfile(string $profileId): array
+    {
 		if (empty($profileId)) return [];
 		$reactions = [];
 		foreach (Reaction::getAllTypeNames() as $typeName)
@@ -212,21 +183,14 @@ class Post extends ActiveRecord
 		return $reactions;
     }
 
-	/**
-	 * @return array
-	 */
-	public function getMyReactions()
-	{
+    public function getMyReactions(): array
+    {
 		return $this->getReactionsFromProfile(Yii::$app->profile->getId());
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function delete()
-	{
+    public function delete(): bool
+    {
 		UniqueId::tryDelete($this->post_id);
-
 		return parent::delete();
 	}
 }

@@ -21,6 +21,7 @@ if (empty($comment))
     <?php $form = ActiveForm::begin(['action' => ['/post/comment', 'id' => $model->post_id], 'options' => [
 	    'class' => 'form-post-comment',
         'data-pjax' => '1',
+        'data-pjax-scrollto' => true, //this actually means don't scroll, but for some reason if set to false it scrolls, but true doesn't
         'onfocusin' => 'prepareForSend(this)' //TODO do it normally, this is total hack
     ]]); ?>
 

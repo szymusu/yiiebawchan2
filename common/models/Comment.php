@@ -3,9 +3,12 @@
 namespace common\models;
 
 use common\models\query\CommentQuery;
+use common\models\query\PostQuery;
+use common\models\query\ProfileQuery;
 use Yii;
 use yii\base\Exception;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -80,7 +83,7 @@ class Comment extends ActiveRecord
     /**
      * Gets query for [[Post]].
      *
-     * @return \yii\db\ActiveQuery|\common\models\query\PostQuery
+     * @return ActiveQuery|PostQuery
      */
     public function getPost()
     {
@@ -90,7 +93,7 @@ class Comment extends ActiveRecord
     /**
      * Gets query for [[Profile]].
      *
-     * @return \yii\db\ActiveQuery|\common\models\query\ProfileQuery
+     * @return ActiveQuery|ProfileQuery
      */
     public function getProfile()
     {
@@ -106,13 +109,9 @@ class Comment extends ActiveRecord
         return new CommentQuery(get_called_class());
     }
 
-	/**
-	 * @return bool
-	 * @param $profile \common\components\Profile | bool
-	 */
-	public function setProfile($profile = false)
-	{
-		if ($profile === false)
+    public function setProfile(\common\components\Profile $profile = null): bool
+    {
+		if ($profile === null)
         {
             $profile = Yii::$app->profile;
         }
@@ -125,14 +124,8 @@ class Comment extends ActiveRecord
 		return false;
     }
 
-	/**
-	 * @param $postId string
-	 * @param $replyToId string | bool
-	 * @param $profile \common\components\Profile | bool
-	 * @return bool
-	 */
-	public function saveNew($postId, $replyToId = false, $profile = false)
-	{
+    public function saveNew(string $postId,string $replyToId = null,\common\components\Profile $profile = null): bool
+    {
 		$this->post_id = $postId;
 		$this->setProfile($profile);
 
@@ -147,7 +140,7 @@ class Comment extends ActiveRecord
 
 		$this->comment_id = $uid->id;
 
-		if (!$replyToId)
+		if (!null)
 		{
 			$this->is_reply = 0;
 			$this->original_comment_id = $this->comment_id;
@@ -161,11 +154,8 @@ class Comment extends ActiveRecord
 		return $this->save();
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function delete()
-	{
+    public function delete(): bool
+    {
 		UniqueId::tryDelete($this->comment_id);
 
 		$this->deleteReplies();

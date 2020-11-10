@@ -32,14 +32,8 @@ class GroupMemberQuery extends ActiveQuery
         return parent::one($db);
     }
 
-	/**
-	 * @param string $groupId
-	 * @param string $profileId
-	 * @param int $type
-	 * @return GroupMemberQuery
-	 */
-	public function member($groupId, $profileId = null, $type = null)
-	{
+	public function member(string $groupId, string $profileId = null, string $type = null): GroupMemberQuery
+    {
 		if ($type !== null)
 		{
 			$this->andWhere(['type' => $type]);
@@ -51,24 +45,13 @@ class GroupMemberQuery extends ActiveQuery
 		return $this->andWhere(['group_id' => $groupId]);
     }
 
-	/**
-	 * @param string $groupId
-	 * @param string $profileId
-	 * @return GroupMemberQuery
-	 */
-	public function joinRequest($groupId, $profileId = null)
-	{
+	public function joinRequest(string $groupId, string $profileId = null): GroupMemberQuery
+    {
 		return $this->member($groupId, $profileId, GroupMember::getTypeNumber('request'));
 	}
 
-	/**
-	 * @param string $groupId
-	 * @param string $profileId
-	 * @param int $level
-	 * @return bool
-	 */
-	public function hasPermissionLevel($groupId, $profileId, $level)
-	{
+    public function hasPermissionLevel(string $groupId, string $profileId, int $level): bool
+    {
 		$member = $this->member($groupId, $profileId)->one();
 		return ($member !== null && $member->type >= $level);
 	}

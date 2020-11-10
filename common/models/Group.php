@@ -148,21 +148,21 @@ class Group extends ActiveRecord
 		}
 	}
 
-	/**
-	 * @param string $newLink
-	 * @param string $randomId
-	 */
-	public function setLinkAndId($newLink, $randomId)
+    /**
+     * @param string $newLink
+     * @param string $randomId
+     */
+	public function setLinkAndId(string $newLink, string $randomId)
 	{
 		$this->link = $newLink;
 		$this->group_id = $randomId;
 	}
 
-	/**
-	 * @param string $previousLink
-	 * @return bool
-	 */
-	public function linkChange($previousLink)
+    /**
+     * @param string $previousLink
+     * @return bool
+     */
+	public function linkChange(string $previousLink)
 	{
 		return $this->processLink($previousLink, $this->link, $this->group_id);
 	}

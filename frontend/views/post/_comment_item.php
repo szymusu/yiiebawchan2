@@ -30,7 +30,11 @@ use yii\widgets\Pjax;
 		Pjax::begin(['scrollTo' => false]);
 		echo Html::a('Reply', ['/post/get-reply-form', 'id' => $model->original_comment_id], [
 			'class' => 'btn btn-primary',
-			'data' => ['method' => 'get', 'pjax' => '1'],
+			'data' => [
+			    'method' => 'get',
+                'pjax' => '1',
+                'pjax-scrollto' => true, //this actually means don't scroll, but for some reason if set to false it scrolls, but true doesn't
+            ],
 		]);
 		Pjax::end();
 	}

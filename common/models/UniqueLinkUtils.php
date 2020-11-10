@@ -8,13 +8,7 @@ use Yii;
 
 trait UniqueLinkUtils
 {
-	/**
-	 * @param string $previousLink
-	 * @param string $newLink
-	 * @param string $randomId
-	 * @return array
-	 */
-	private function _processLink($previousLink, $newLink, $randomId)
+    private function _processLink(string $previousLink, string $newLink, string $randomId) : array
 	{
 		if ($newLink === $previousLink)
 		{
@@ -48,28 +42,14 @@ trait UniqueLinkUtils
 		}
 	}
 
-	/**
-	 * @param string $previousLink
-	 * @param string $newLink
-	 * @param string $randomId
-	 * @return bool
-	 */
-	private function processLink($previousLink, $newLink, $randomId)
+    private function processLink(string $previousLink, string $newLink, string $randomId) : bool
 	{
 		$result = $this->_processLink($previousLink, $newLink, $randomId);
 		$this->setLinkAndId($result['newLink'], $result['randomId']);
 		return $result['result'];
 	}
 
-	/**
-	 * @param string $newLink
-	 * @param string $randomId
-	 */
-	public abstract function setLinkAndId($newLink, $randomId);
+    public abstract function setLinkAndId(string $newLink, string $randomId);
 
-	/**
-	 * @param string $previousLink
-	 * @return bool
-	 */
-	public abstract function linkChange($previousLink);
+	public abstract function linkChange(string $previousLink) : bool;
 }

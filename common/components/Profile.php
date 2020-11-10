@@ -35,7 +35,7 @@ class Profile extends Component
     /**
      * @return ProfileModel | null
      */
-    public function get()
+    public function get() : ProfileModel
     {
         return $this->_profile;
     }
@@ -73,7 +73,7 @@ class Profile extends Component
      * @param $profile ProfileModel
      * @throws ForbiddenHttpException
      */
-    public function switchTo($profile)
+    public function switchTo(ProfileModel $profile)
     {
         if ($profile->isMine())
         {

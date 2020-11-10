@@ -116,40 +116,23 @@ class GroupMember extends ActiveRecord
         return new GroupMemberQuery(get_called_class());
     }
 
-	/**
-	 * @param string $profileId
-	 * @return GroupMember
-	 */
-	public static function findByProfile($profileId)
-	{
+    public static function findByProfile(string $profileId): GroupMember
+    {
 		return static::find()->andWhere(['profile_id' => $profileId])->one();
     }
 
-	/**
-	 * @param string $groupId
-	 * @param string $profileId
-	 * @return bool
-	 */
-	public static function hasJoinRequest($groupId, $profileId)
-	{
+    public static function hasJoinRequest(string $groupId, string $profileId): bool
+    {
 		return GroupMember::find()->joinRequest($groupId, $profileId)->exists();
     }
 
-	/**
-	 * @param string $groupId
-	 * @param string $profileId
-	 * @return GroupMember
-	 */
-	public static function findJoinRequest($groupId, $profileId)
-	{
+    public static function findJoinRequest(string $groupId, string $profileId): GroupMember
+    {
 		return GroupMember::find()->joinRequest($groupId, $profileId)->one();
 	}
 
-	/**
-	 * @return string
-	 */
-	public function typeName()
-	{
+    public function typeName(): string
+    {
 		try
 		{
 			return static::getTypeName($this->type);
@@ -160,13 +143,8 @@ class GroupMember extends ActiveRecord
 		}
 	}
 
-	/**
-	 * @param string $groupId
-	 * @param string $profileId
-	 * @return bool
-	 */
-	public function newJoinRequest($groupId, $profileId)
-	{
+    public function newJoinRequest(string $groupId, string $profileId): bool
+    {
 		$this->profile_id = $profileId;
 		$this->group_id = $groupId;
 		$this->type = GroupMember::getTypeNumber('request');

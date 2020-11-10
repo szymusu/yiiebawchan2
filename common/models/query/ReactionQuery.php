@@ -2,16 +2,19 @@
 
 namespace common\models\query;
 
+use common\models\Reaction;
+use yii\db\ActiveQuery;
+
 /**
  * This is the ActiveQuery class for [[\common\models\Reaction]].
  *
  * @see \common\models\Reaction
  */
-class ReactionQuery extends \yii\db\ActiveQuery
+class ReactionQuery extends ActiveQuery
 {
     /**
      * {@inheritdoc}
-     * @return \common\models\Reaction[]|array
+     * @return Reaction[]|array
      */
     public function all($db = null)
     {
@@ -20,47 +23,29 @@ class ReactionQuery extends \yii\db\ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return \common\models\Reaction|array|null
+     * @return Reaction|array|null
      */
     public function one($db = null)
     {
         return parent::one($db);
     }
 
-    /**
-     * @param $postId string
-     * @return ReactionQuery
-     */
-    public function post($postId)
+    public function post(string $postId): ReactionQuery
     {
         return $this->andWhere(['post_id' => $postId]);
     }
 
-    /**
-     * @param $type int
-     * @return ReactionQuery
-     */
-    public function type($type)
+    public function type(int $type): ReactionQuery
     {
         return $this->andWhere(['type' => $type]);
     }
 
-	/**
-	 * @param $profileId string
-	 * @return ReactionQuery
-	 */
-	public function profile($profileId)
-	{
+    public function profile(string $profileId): ReactionQuery
+    {
 		return $this->andWhere(['profile_id' => $profileId]);
     }
 
-    /**
-     * @param $postId string
-     * @param $type int
-     * @param $profileId string
-     * @return ReactionQuery
-     */
-    public function specific($postId, $type, $profileId)
+    public function specific(string $postId, int $type, string $profileId): ReactionQuery
     {
         return $this->post($postId)->type($type)->profile($profileId);
     }

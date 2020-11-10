@@ -37,7 +37,9 @@ AppAsset::register($this);
 	if (Yii::$app->user->isGuest) {
 		$menuItems[] = ['label' => 'Sign up', 'url' => ['/site/signup']];
 		$menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
-	} else {
+	}
+	else
+	{
 		if (Yii::$app->profile->getIsLogged())
 		{
 			$menuItems[] = ['label' => Yii::$app->profile->get()->name, 'url' => Yii::$app->profile->getUrl()];

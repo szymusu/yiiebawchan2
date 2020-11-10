@@ -17,7 +17,7 @@ class UniqueId extends ActiveRecord
 	/**
 	 * @var string
 	 */
-	public $link;
+	public string $link;
 
     /**
      * {@inheritdoc}
@@ -53,15 +53,12 @@ class UniqueId extends ActiveRecord
      * {@inheritdoc}
      * @return UniqueIdQuery the active query used by this AR class.
      */
-    public static function find()
+    public static function find(): UniqueIdQuery
     {
         return new UniqueIdQuery(get_called_class());
     }
 
-	/**
-	 * @param string $value
-	 */
-	public static function tryDelete($value)
+    public static function tryDelete(string $value)
 	{
 		$query = static::findOne($value);
 		if ($query != null)
@@ -74,8 +71,8 @@ class UniqueId extends ActiveRecord
 	 * @return UniqueId
 	 * @throws Exception
 	 */
-	public function randomize()
-	{
+	public function randomize(): UniqueId
+    {
 		do
 		{
 			$randomId = Yii::$app->security->generateRandomString(16);
@@ -85,17 +82,17 @@ class UniqueId extends ActiveRecord
 		return $this;
     }
 
-	/**
-	 * @param string $link
-	 * @return UniqueId
-	 * @throws Exception
-	 */
-	public static function newRandom($link = null)
-	{
+    /**
+     * @param string|null $link
+     * @return UniqueId
+     * @throws Exception
+     */
+	public static function newRandom(?string $link = null): UniqueId
+    {
 		$uid = new static();
 		$uid->randomize();
 
-		if ($link == null)
+		if ($link === null)
 		{
 			$uid->link = $uid->id;
 		}

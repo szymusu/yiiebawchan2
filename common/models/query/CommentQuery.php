@@ -17,7 +17,7 @@ class CommentQuery extends ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return \common\models\Comment[]|array
+     * @return Comment[]|array
      */
     public function all($db = null)
     {
@@ -26,37 +26,25 @@ class CommentQuery extends ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return \common\models\Comment|array|null
+     * @return Comment|array|null
      */
     public function one($db = null)
     {
         return parent::one($db);
     }
 
-	/**
-	 * @param $post Post
-	 * @return CommentQuery
-	 */
-	public function onPost($post)
-	{
+    public function onPost(Post $post): CommentQuery
+    {
 		return $this->andWhere(['post_id' => $post->post_id]);
     }
 
-	/**
-	 * @param $value bool
-	 * @return CommentQuery
-	 */
-	public function reply($value = true)
-	{
+    public function reply(bool $value = true): CommentQuery
+    {
 		return $this->andWhere(['is_reply' => $value]);
     }
 
-	/**
-	 * @param $comment Comment
-	 * @return CommentQuery
-	 */
-	public function replyTo($comment)
-	{
+    public function replyTo(Comment $comment): CommentQuery
+    {
 		return $this->reply()->andWhere(['original_comment_id' => $comment->comment_id]);
     }
 }

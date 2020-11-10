@@ -3,9 +3,9 @@
 namespace common\models\query;
 
 use common\models\Profile;
-use common\models\User;
 use Yii;
 use yii\db\ActiveQuery;
+use yii\web\User;
 
 /**
  * This is the ActiveQuery class for [[\common\models\Profile]].
@@ -40,11 +40,7 @@ class ProfileQuery extends ActiveQuery
         return $this->owner(Yii::$app->user);
     }
 
-    /**
-     * @param $user User
-     * @return ProfileQuery
-     */
-    public function owner($user)
+    public function owner(User $user): ProfileQuery
     {
         return $this->andWhere(['user_id' => $user->id]);
     }

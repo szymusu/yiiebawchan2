@@ -6,22 +6,18 @@ use Exception;
 
 trait TypeArrayUtils
 {
-	/**
-	 * @param string $typeName
-	 * @return int
-	 */
-	public static function getTypeNumber($typeName)
-	{
+    public static function getTypeNumber(string $typeName): int
+    {
 		return static::$TYPE[$typeName];
 	}
 
-	/**
-	 * @param int $typeNumber
-	 * @return string
-	 * @throws Exception
-	 */
-	public static function getTypeName($typeNumber)
-	{
+    /**
+     * @param int $typeNumber
+     * @return string
+     * @throws Exception
+     */
+	public static function getTypeName(int $typeNumber): string
+    {
 		$result = array_search($typeNumber, static::$TYPE);
 		if ($result === false)
 		{
@@ -36,26 +32,18 @@ trait TypeArrayUtils
 	/**
 	 * @return array<string>
 	 */
-	public static function getAllTypeNames()
-	{
+	public static function getAllTypeNames(): array
+    {
 		return array_keys(static::$TYPE);
 	}
 
-	/**
-	 * @param string $typeName
-	 * @return bool
-	 */
-	public static function typeNameExists($typeName)
-	{
+    public static function typeNameExists(string $typeName): bool
+    {
 		return array_key_exists($typeName, static::$TYPE);
 	}
 
-	/**
-	 * @param int $typeNumber
-	 * @return bool
-	 */
-	public static function typeNumberExists($typeNumber)
-	{
+    public static function typeNumberExists(int $typeNumber): bool
+    {
 		return in_array($typeNumber, static::$TYPE);
 	}
 }
